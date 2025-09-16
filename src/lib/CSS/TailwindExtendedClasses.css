@@ -1,0 +1,23 @@
+.SubNav {
+	@apply transition-all duration-300 z-0 relative h-10 items-center flex justify-center bg-accent [clip-path:polygon(0px_0,calc(100%-14px)_0,calc(100%-0px)_50%,calc(100%-14px)_100%,0px_100%,14px_50%)]}
+
+.SubNav::after {
+	content: '';
+	@apply transition-all duration-300 -z-10 absolute h-[calc(100%-4px)] w-[calc(100%-6px)] top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2  pointer-events-none [clip-path:polygon(2px_0,calc(100%-13px)_0,calc(100%-1px)_50%,calc(100%-13px)_100%,2px_100%,15px_50%)];
+}
+
+.activeSubNav {
+	@apply text-baseC;
+}
+.activeSubNav::after {
+	@apply bg-accent;
+}
+
+.clip-under-sticky {
+	--hide-top: calc(5rem + 3.5rem); 
+	-webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--hide-top));
+	mask-image: linear-gradient(to bottom, transparent 0, #000 var(--hide-top));
+}
+
+
+
