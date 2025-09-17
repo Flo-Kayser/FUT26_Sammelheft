@@ -1,6 +1,16 @@
-import { writable } from "svelte/store";
+import { writable } from 'svelte/store';
+import { browser } from '$app/environment';
 
-export const savedStores = writable({
-    
-    displayedCardsVariant: "all"
-});
+function persistent(key, initial) {
+	const start = browser
+		? JSON.parse(localStorage.getItem(key) || JSON.stringify(initial))
+		: initial;
+
+	const store = writable(start);
+	if (browser) store.subscribe(v => localStorage.setItem(key, JSON.stringify(v)));
+	return store;
+}
+
+export const savedStores        = persistent('savedStores', { impossibleSwitch: false, displayedCardsVariant: 'all' });
+export const collectedCardsStore = persistent('collectedCards', []);
+export const impossibleCardsStore = persistent('impossibleCards', []);

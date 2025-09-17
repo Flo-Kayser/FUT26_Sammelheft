@@ -1,6 +1,6 @@
 <script>
 	import { resourceMapStore } from '$lib/stores/sessionStores';
-	import { savedStores } from '$lib/stores/savedStores';
+	import { savedStores,collectedCardsStore,impossibleCardsStore } from '$lib/stores/savedStores';
 
 
 	$: totalCount =
@@ -12,7 +12,7 @@
 					? $resourceMapStore?.meta?.totalOnlyBest
 					: $resourceMapStore?.meta?.totalOnlyBestSpecial;
 
-	let collectedCount = 1712;
+	$: collectedCount = $impossibleCardsStore.length + $collectedCardsStore.length;
 </script>
 
 <div class="h-20 w-full text-white sticky top-0 z-50 left-0 flex items-center contrast-125 justify-between p-4">

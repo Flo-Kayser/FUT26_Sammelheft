@@ -7,20 +7,23 @@
 		resourceMapStore,
 		sessionStore
 	} from '$lib/stores/sessionStores';
-	import { savedStores } from '$lib/stores/savedStores';
+	import { savedStores, collectedCardsStore, impossibleCardsStore } from '$lib/stores/savedStores';
 	import { onMount } from 'svelte';
 	import { apiClient } from '$lib/apiClient';
+
+	$: console.log($collectedCardsStore)
+	$: console.log(id)
 
 	let cards = [];
 	let sortedCards = [];
 	export let children;
 
+	// ---- Data & Grid ----
 	onMount(async () => {
 		cards = await fetchPlayers();
 		const resize = () => {
 			if (!containerEl) return;
 			containerWidth = containerEl.clientWidth;
-			// 50 px Reserve abziehen
 			containerHeight = window.innerHeight - containerEl.getBoundingClientRect().top - 90;
 			updateGrid();
 		};
@@ -28,13 +31,15 @@
 		resize();
 		return () => window.removeEventListener('resize', resize);
 	});
+
 	$: sortedCards = Object.values(cards)
 		.slice()
-		.sort((a, b) => {
-			if (a.rating !== b.rating) return b.rating - a.rating;
-			if (a.name !== b.name) return a.name.localeCompare(b.name);
-			return a.cardName.localeCompare(b.cardName);
-		});
+		.sort((a, b) =>
+			a.rating !== b.rating
+				? b.rating - a.rating
+				: a.name.localeCompare(b.name) || a.cardName.localeCompare(b.cardName)
+		);
+
 	$: id = $page.params.id ?? '';
 	$: section = $page.params.section ?? '';
 
@@ -51,134 +56,112 @@
 		if (section === 'Countries') return $countriesIndexStore?.countries?.[id]?.name ?? '';
 		if (section === 'Clubs') {
 			for (const league of Object.values($leaguesIndexStore?.leagues ?? {})) {
-				for (const club of league.clubIds) {
-					if (club.id == id) {
-						return club.name;
-					}
-				}
+				for (const club of league.clubIds) if (club.id == id) return club.name;
 			}
 			return 'Club';
 		}
 		return '';
 	})();
 
-	const BIT = {
-		all: 1,
-		noBase: 2,
-		onlyBest: 4,
-		onlyBestSpecial: 8
-	};
+	// ---- Counts ----
+	const BIT = { all: 1, noBase: 2, onlyBest: 4, onlyBestSpecial: 8 };
+
+	function matchingIds(rm, section, id, matchesVariant) {
+		return Object.entries(rm)
+			.filter(([_, e]) => {
+				if (!matchesVariant(e)) return false;
+				switch (section) {
+					case 'Versions':
+						return String(e.v) === id;
+					case 'Leagues':
+						return String(e.l) === id;
+					case 'Countries':
+						return String(e.c) === id;
+					case 'Clubs':
+						if (id.includes('_')) {
+							const [l, c] = id.split('_');
+							return String(e.l) === l && String(e.club) === c;
+						}
+						return String(e.club) === id;
+				}
+			})
+			.map(([rid]) => rid);
+	}
 
 	$: totalPossible = (() => {
 		const rm = $resourceMapStore?.data ?? {};
 		if (!section || !id) return 0;
-
 		const variant = $savedStores.displayedCardsVariant || 'all';
 		const bitMask = BIT[variant] ?? BIT.all;
+		const matchesVariant = (e) => variant === 'all' || e.m & bitMask;
+		return matchingIds(rm, section, id, matchesVariant).length;
+	})();
 
-		const matchesVariant = (e) => {
-			if (variant === 'all') return true;
-			return (e.m & bitMask) !== 0;
-		};
-
-		switch (section) {
-			case 'Versions':
-				return Object.values(rm).filter((e) => String(e.v) === id && matchesVariant(e)).length;
-
-			case 'Leagues':
-				return Object.values(rm).filter((e) => String(e.l) === id && matchesVariant(e)).length;
-
-			case 'Countries':
-				return Object.values(rm).filter((e) => String(e.c) === id && matchesVariant(e)).length;
-
-			case 'Clubs':
-				if (id.includes('_')) {
-					let league = id.split('_')[0];
-					let tempId = id.split('_')[1];
-					return Object.values(rm).filter(
-						(e) => String(e.club) === tempId && String(e.l) === league && matchesVariant(e)
-					).length;
-				} else {
-					return Object.values(rm).filter((e) => String(e.club) === id && matchesVariant(e)).length;
-				}
-
-			default:
-				return 0;
-		}
+	$: collectedCount = (() => {
+		const rm = $resourceMapStore?.data ?? {};
+		if (!section || !id) return 0;
+		const variant = $savedStores.displayedCardsVariant || 'all';
+		const bitMask = BIT[variant] ?? BIT.all;
+		const matchesVariant = (e) => variant === 'all' || e.m & bitMask;
+		const ids = matchingIds(rm, section, id, matchesVariant);
+		const collected = new Set($collectedCardsStore);
+		const impossible = new Set($impossibleCardsStore);
+		return ids.filter((rid) => collected.has(Number(rid)) || impossible.has(Number(rid))).length;
 	})();
 
 	async function fetchPlayers() {
-		if (section === 'Versions') {
-			return await apiClient.fetchData(`versions/${id}.json`);
-		}
-		if (section === 'Clubs') {
-			const tmp = await apiClient.fetchData(
-				`clubs/clubs-${$savedStores.displayedCardsVariant}/${id}.json`
-			);
-			return id.includes('_') ? tmp : tmp.players;
-		}
-		if (section === 'Countries') {
-			return await apiClient.fetchData(
+		if (section === 'Versions') return apiClient.fetchData(`versions/${id}.json`);
+		if (section === 'Clubs')
+			return id.includes('_')
+				? apiClient.fetchData(`clubs/clubs-${$savedStores.displayedCardsVariant}/${id}.json`)
+				: (
+						await apiClient.fetchData(
+							`clubs/clubs-${$savedStores.displayedCardsVariant}/${id}.json`
+						)
+					).players;
+		if (section === 'Countries')
+			return apiClient.fetchData(
 				`countries/countries-${$savedStores.displayedCardsVariant}/${id}.json`
 			);
-		}
-		if (section === 'Leagues') {
-			return await apiClient.fetchData(
+		if (section === 'Leagues')
+			return apiClient.fetchData(
 				`leagues/leagues-${$savedStores.displayedCardsVariant}/${id}.json`
 			);
-		}
 	}
 
-	// ---- Layout & Pagination ----
-	let cardWidth = 180;
-	let cardHeight = 260;
-	let gap = 16;
-
-	let containerEl;
-	let containerWidth = 0;
-	let containerHeight = 0;
-
-	let columns = 0;
-	let rows = 0;
-	let perPage = 0;
-	let totalPages = 0;
-
+	// ---- Grid/Pagination ----
+	let cardWidth = 180,
+		cardHeight = 260,
+		gap = 16;
+	let containerEl,
+		containerWidth = 0,
+		containerHeight = 0;
+	let columns = 0,
+		rows = 0,
+		perPage = 0,
+		totalPages = 0;
 	let currentPage = 1;
 
 	function updateGrid() {
 		if (!containerWidth || !containerHeight) return;
-
 		columns = Math.max(1, Math.floor((containerWidth + gap) / (cardWidth + gap)));
 		rows = Math.max(1, Math.floor((containerHeight + gap) / (cardHeight + gap)));
-
 		perPage = columns * rows;
-		console.log(Object.values(cards).length, perPage);
 		totalPages = sortedCards.length ? Math.ceil(sortedCards.length / perPage) : 0;
-
 		if (containerEl) {
 			containerEl.style.display = 'grid';
 			containerEl.style.gap = gap + 'px';
 			containerEl.style.gridTemplateColumns = `repeat(${columns}, ${cardWidth}px)`;
 			containerEl.style.gridAutoRows = `${cardHeight}px`;
 		}
-
-		// aktuelle Seite korrigieren, falls perPage kleiner geworden ist
 		if (currentPage > totalPages) currentPage = totalPages || 1;
 	}
 
-	$: if (sortedCards && containerWidth && containerHeight) {
-		updateGrid();
-	}
+	$: if (sortedCards && containerWidth && containerHeight) updateGrid();
 
-	$: pagedCards = Object.values(sortedCards).slice(
-		(currentPage - 1) * perPage,
-		currentPage * perPage
-	);
+	$: pagedCards = sortedCards.slice((currentPage - 1) * perPage, currentPage * perPage);
 
-	$: sessionStore.update((s) => {
-		s.pagedCards = pagedCards;
-		return s;
-	});
+	$: sessionStore.update((s) => ({ ...s, pagedCards }));
 </script>
 
 <div class="relative h-screen text-black overflow-hidden">
@@ -229,7 +212,7 @@
 					<div
 						class="flex gap-1 bg-black/50 text-white px-3 pl-6 py-1 [clip-path:polygon(16px_0,100%_0%,100%_100%,16px_100%,2px_50%)]"
 					>
-						<span>{totalPossible}</span>/
+						<span>{collectedCount}</span>/
 						<span>{totalPossible}</span>
 					</div>
 				</div>

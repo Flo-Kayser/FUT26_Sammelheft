@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { countriesIndexStore, resourceMapStore, sessionStore } from '$lib/stores/sessionStores';
-	import { savedStores } from '$lib/stores/savedStores';
+	import { savedStores, collectedCardsStore, impossibleCardsStore } from '$lib/stores/savedStores';
 	import { handleScroll } from '$lib/helpers/listScrollControls';
 	import { goto } from '$app/navigation';
 	import { navToCardsSite } from '$lib/helpers/navigationHelper';
@@ -39,16 +39,27 @@
 		const rm = $resourceMapStore?.data ?? {};
 		const variant = $savedStores.displayedCardsVariant;
 		const bitMask = BIT[variant] ?? 0;
+		const collected = new Set($collectedCardsStore);
+		const impossible = new Set($impossibleCardsStore);
 
 		const tmp = {};
 		for (const c of filteredCountries) {
-			tmp[c.id] = Object.values(rm).filter((e) => {
+			const allCards = Object.entries(rm).filter(([rid, e]) => {
 				if (!e || e.c !== Number(c.id)) return false;
-				return variant === 'all' ? true : (e.m & bitMask) !== 0;
-			}).length;
+				return variant === 'all' || (e.m & bitMask) !== 0;
+			});
+
+			const collectedIds = allCards
+				.map(([rid]) => rid)
+				.filter((rid) => collected.has(Number(rid)) || impossible.has(Number(rid)));
+
+			tmp[c.id] = {
+				total: allCards.length,
+				collected: collectedIds.length,
+				collectedIds 
+			};
 		}
 		totals = tmp;
-
 	}
 </script>
 
@@ -82,7 +93,7 @@
 					<span>{country.deName}</span>
 				</div>
 				<div class="flex h-full items-center text-textC">
-					<span>{totals[country.id] ?? 0}</span>/<span>{totals[country.id] ?? 0}</span>
+					<span>{totals[country.id]?.collected}</span>/<span>{totals[country.id]?.total}</span>
 				</div>
 			</button>
 		</div>
