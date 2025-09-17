@@ -3,6 +3,7 @@
 	import { leaguesIndexStore, resourceMapStore, sessionStore } from '$lib/stores/sessionStores';
 	import { savedStores } from '$lib/stores/savedStores';
 	import { handleScroll } from '$lib/helpers/listScrollControls';
+	import { navToCardsSite } from '$lib/helpers/navigationHelper';
 
 	let items = [];
 	let filteredLeagues = [];
@@ -13,49 +14,48 @@
 
 	const BIT = {
 		all: 1,
-		nobase: 2,
-		onlybest: 4,
-		onlybestspecial: 8
+		noBase: 2,
+		onlyBest: 4,
+		onlyBestSpecial: 8
 	};
 
 	onMount(() => handleScroll(items));
 
 	/* ---------------- LIGA-GESAMTZAHLEN ---------------- */
 	$: {
-	const q = ($sessionStore.searchQuery ?? '').toLowerCase().trim();
-	const all = Object.entries($leaguesIndexStore.leagues ?? {}).map(([id, c]) => ({ ...c, id }));
+		const q = ($sessionStore.searchQuery ?? '').toLowerCase().trim();
+		const all = Object.entries($leaguesIndexStore.leagues ?? {}).map(([id, c]) => ({ ...c, id }));
 
-	filteredLeagues = q ? all.filter((c) => (c?.name ?? '').toLowerCase().includes(q)) : all;
-	filteredLeagues.sort((a, b) => a.sortId - b.sortId);
-	handleScroll(items);
+		filteredLeagues = q ? all.filter((c) => (c?.name ?? '').toLowerCase().includes(q)) : all;
+		filteredLeagues.sort((a, b) => a.sortId - b.sortId);
+		handleScroll(items);
 
-	const rm = $resourceMapStore?.data ?? {};
-	const variant = $savedStores.displayedCardsVariant;
-	const bitMask = BIT[variant] ?? 0;
+		const rm = $resourceMapStore?.data ?? {};
+		const variant = $savedStores.displayedCardsVariant;
+		const bitMask = BIT[variant] ?? 0;
 
-	const tmp = {};
-	for (const l of filteredLeagues) {
-		if (Number(l.id) === 2118) {
-			// normale Liga-Spieler zählen
-			const baseCount = Object.values(rm).filter(e =>
-				e && e.l === 2118 && (variant === 'all' || (e.m & bitMask) !== 0)
-			).length;
+		const tmp = {};
+		for (const l of filteredLeagues) {
+			if (Number(l.id) === 2118) {
+				// normale Liga-Spieler zählen
+				const baseCount = Object.values(rm).filter(
+					(e) => e && e.l === 2118 && (variant === 'all' || (e.m & bitMask) !== 0)
+				).length;
 
-			// Hero-Club 114605 mitzählen (ebenfalls nach Variant filtern!)
-			const heroCount = Object.values(rm).filter(e =>
-				e && e.club === 114605 && (variant === 'all' || (e.m & bitMask) !== 0)
-			).length;
+				// Hero-Club 114605 mitzählen (ebenfalls nach Variant filtern!)
+				const heroCount = Object.values(rm).filter(
+					(e) => e && e.club === 114605 && (variant === 'all' || (e.m & bitMask) !== 0)
+				).length;
 
-			tmp[l.id] = baseCount + heroCount;
-		} else {
-			tmp[l.id] = Object.values(rm).filter(e =>
-				e && e.l === Number(l.id) && (variant === 'all' || (e.m & bitMask) !== 0)
-			).length;
+				tmp[l.id] = baseCount + heroCount;
+			} else {
+				tmp[l.id] = Object.values(rm).filter(
+					(e) => e && e.l === Number(l.id) && (variant === 'all' || (e.m & bitMask) !== 0)
+				).length;
+			}
 		}
+		totals = tmp;
 	}
-	totals = tmp;
-}
-
 
 	/* ---------------- CLUB-ZAHLEN ---------------- */
 	function recalcClubTotals() {
@@ -107,7 +107,10 @@
 			       opacity:0;pointer-events:none;"
 		>
 			<!-- Kopfzeile Liga -->
-			<button class="flex w-full items-center justify-between px-2 h-16 cursor-pointer">
+			<button
+				on:click={() => navToCardsSite('Leagues', league.id)}
+				class="flex w-full items-center justify-between px-2 h-16 cursor-pointer"
+			>
 				<div class="flex items-center h-full gap-4">
 					{#if league.cId === null}
 						<img
@@ -145,22 +148,31 @@
 		</div>
 
 		<!-- Clubs -->
+		<!-- Clubs -->
 		{#if expandedLeagueId === league.id}
 			<div class="grid grid-cols-2 px-8 gap-2">
 				{#each league.clubIds ?? [] as cid, j}
-					<div
-						class="flex odd:pl-6 even:pr-6 px-2 py-1 h-8 justify-between"
+					<button
+						on:click={() => {
+							const clubId =
+								(cid.id === 114605 || String(cid.id).includes('114605')) && league.id != 2118
+									? `${league.id}_${cid.id}`
+									: cid.id;
+							console.log(clubId);
+							navToCardsSite('Clubs', clubId);
+						}}
+						class="flex odd:pl-6 even:pr-6 px-2 py-1 h-8 justify-between cursor-pointer"
 						style="background: linear-gradient(
-							to {j % 2 === 0 ? 'left' : 'right'},
-							var(--color-accent) 40%,
-							transparent 100%
-						);"
+					to {j % 2 === 0 ? 'left' : 'right'},
+					var(--color-accent) 40%,
+					transparent 100%
+				);"
 						bind:this={items[i + 60 + j]}
 					>
 						<div class="flex h-full items-center gap-2 px-2">
-							{#if cid && typeof cid.id === 'string' && cid.id.includes('114605')}
+							{#if String(cid.id).includes('114605')}
 								<img
-									src={`https://cdn.easysbc.io/fc25/clubs/114605.png`}
+									src="https://cdn.easysbc.io/fc25/clubs/114605.png"
 									class="h-full contrast-75"
 									alt=""
 								/>
@@ -177,7 +189,7 @@
 							<span>{clubTotals[league.id]?.[cid.id] ?? 0}</span>/
 							<span>{clubTotals[league.id]?.[cid.id] ?? 0}</span>
 						</div>
-					</div>
+					</button>
 				{/each}
 			</div>
 		{/if}

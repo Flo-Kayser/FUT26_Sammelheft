@@ -4,8 +4,11 @@
 	import { savedStores } from '$lib/stores/savedStores';
 	import { getTotalValue } from '$lib/helpers/CounterValue';
 	import { handleScroll } from '$lib/helpers/listScrollControls';
+	import { navToCardsSite } from '$lib/helpers/navigationHelper';
 	let items = [];
 	let filteredVersions = [];
+
+	$: console.log($versionIndexStore)
 
 	onMount(() => {
 		handleScroll(items);
@@ -47,7 +50,7 @@
 
 			<button
 				on:click={() => {
-					console.log(version.details.name);
+					navToCardsSite('Versions', version.id);
 				}}
 				class="h-full flex justify-between px-2 w-full items-center cursor-pointer relative"
 			>

@@ -3,6 +3,8 @@
 	import { countriesIndexStore, resourceMapStore, sessionStore } from '$lib/stores/sessionStores';
 	import { savedStores } from '$lib/stores/savedStores';
 	import { handleScroll } from '$lib/helpers/listScrollControls';
+	import { goto } from '$app/navigation';
+	import { navToCardsSite } from '$lib/helpers/navigationHelper';
 
 	let items = [];
 	let filteredCountries = [];
@@ -10,9 +12,9 @@
 
 	const BIT = {
 		all: 1,
-		nobase: 2,
-		onlybest: 4,
-		onlybestspecial: 8
+		noBase: 2,
+		onlyBest: 4,
+		onlyBestSpecial: 8
 	};
 
 	onMount(() => handleScroll(items));
@@ -46,6 +48,7 @@
 			}).length;
 		}
 		totals = tmp;
+
 	}
 </script>
 
@@ -67,14 +70,13 @@
 			</button>
 
 			<button
-				on:click={() => console.log(country.name)}
+				on:click={() => navToCardsSite('Countries', country.id)}
 				class="relative flex h-full w-full items-center justify-between px-2"
 			>
 				<div class="flex h-full items-center gap-2">
 					<img
 						src={`https://cdn.easysbc.io/fc25/countries/${country.id}.png`}
 						class="h-full py-4 contrast-75"
-                        loading="lazy"
 						alt="flagImg"
 					/>
 					<span>{country.deName}</span>

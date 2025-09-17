@@ -7,5 +7,6 @@ export const leaguesIndexStore = writable({});
 
 export const sessionStore = writable({
     searchQuery: "",
+    pagedCards: [],
 });
 

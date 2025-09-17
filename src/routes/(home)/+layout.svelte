@@ -49,7 +49,7 @@
 					? 'hidden'
 					: ''}"
 			>
-				{#each [{ value: 'all', label: 'Alle' }, { value: 'nobase', label: 'Ohne Basis' }, { value: 'onlybest', label: 'Beste' }, { value: 'onlybestspecial', label: 'Beste Spezial' }] as option}
+				{#each [{ value: 'all', label: 'Alle' }, { value: 'noBase', label: 'Ohne Basis' }, { value: 'onlyBest', label: 'Beste' }, { value: 'onlyBestSpecial', label: 'Beste Spezial' }] as option}
 					<label
 						class="bg-baseC px-1 cursor-pointer items-center h-full w-full whitespace-nowrap py-1 flex [clip-path:polygon(2px_0,calc(100%-13px)_0,calc(100%-1px)_50%,calc(100%-13px)_100%,2px_100%,15px_50%)]"
 					>
