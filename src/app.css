@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-@import '$lib/Css/Typography.css';
-@import '$lib/Css/TailwindExtendedClasses.css';
-@import '$lib/Css/Variables.css';
+@import '$lib/CSS/Typography.css';
+@import '$lib/CSS/TailwindExtendedClasses.css';
+@import '$lib/CSS/Variables.css';
 
