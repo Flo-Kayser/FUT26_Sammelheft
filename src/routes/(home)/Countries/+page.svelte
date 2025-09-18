@@ -56,7 +56,7 @@
 			tmp[c.id] = {
 				total: allCards.length,
 				collected: collectedIds.length,
-				collectedIds 
+				collectedIds
 			};
 		}
 		totals = tmp;
@@ -86,9 +86,14 @@
 			>
 				<div class="flex h-full items-center gap-2">
 					<img
-						src={`https://cdn.easysbc.io/fc25/countries/${country.id}.png`}
+						src={`https://cdn.easysbc.io/fc26/countries/${country.id}.png`}
 						class="h-full py-4 contrast-75"
 						alt="flagImg"
+						on:error={(e) => {
+							const img = e.currentTarget;
+							img.src = 'https://cdn.easysbc.io/fc26/countries/21.png'; 
+							img.onerror = null; 
+						}}
 					/>
 					<span>{country.deName}</span>
 				</div>

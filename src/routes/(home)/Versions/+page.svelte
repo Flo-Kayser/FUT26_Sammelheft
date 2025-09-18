@@ -7,9 +7,9 @@
 
 	let items = [];
 	let filteredVersions = [];
-	let totals = {};   // enthält { total, collected } pro Version
+	let totals = {};   
 
-	const BIT = { all:1, nobase:2, onlybest:4, onlybestspecial:8 };
+	const BIT = { all:1, noBase:2, onlyBest:4, onlyBestSpecial:8 };
 
 	onMount(() => handleScroll(items));
 

@@ -2,6 +2,8 @@
 	import { sessionStore } from '$lib/stores/sessionStores';
     import { toggleCard } from '$lib/helpers/collectionHelpers';
 
+import { savedStores, collectedCardsStore, impossibleCardsStore } from '$lib/stores/savedStores';
+
 </script>
 
 {#each Object.values($sessionStore.pagedCards) as card}

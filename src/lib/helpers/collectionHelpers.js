@@ -7,10 +7,6 @@ export function toggleCard(cardId) {
 	const collectedCards = get(collectedCardsStore);
 	const impossibleCards = get(impossibleCardsStore);
 
-	console.log(impSwitch);
-	console.log(collectedCards);
-	console.log(impossibleCards);
-
 	if (!impSwitch) {
 		if (impossibleCards.includes(cardId)) return;
 		if (!collectedCards.includes(cardId)) {
