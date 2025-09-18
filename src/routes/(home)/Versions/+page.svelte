@@ -44,6 +44,7 @@
 		}
 		totals = tmp;
 	}
+
 </script>
 
 <svelte:window on:scroll={() => handleScroll(items)} />

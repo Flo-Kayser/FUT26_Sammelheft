@@ -110,7 +110,7 @@
 	
 	$: cardWidth = $cardSizeStore;
 	$: cardHeight = Math.round($cardSizeStore * (400 / 320));
-	let gap = 16;
+	let gap = 8;
 	let containerEl,
 		containerWidth = 0,
 		containerHeight = 0;
@@ -206,7 +206,7 @@
 
 <div class="relative h-screen text-black overflow-hidden px-2">
 	<div
-		class="absolute inset-0 blur-xl contrast-75 opacity-60"
+		class="absolute inset-0 blur-xl contrast-75 opacity-70 brightness-75"
 		style="background-image:url({imageUrl});
 		       background-size:150%;
 		       background-position:50% 25%;"
@@ -260,7 +260,7 @@
 		</div>
 
 		<!-- Grid -->
-		<div class="flex flex-1 flex-col pb-8">
+		<div class="flex flex-1 flex-col pb-20">
 			<div bind:this={containerEl} class="flex-1 p-4 content-center justify-center">
 				{@render children()}
 			</div>

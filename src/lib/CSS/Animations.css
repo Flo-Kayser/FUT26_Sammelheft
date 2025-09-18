@@ -1,0 +1,10 @@
+@keyframes smooth-pulse {
+	50% {
+        opacity: 0.5;
+        scale: 1.1;
+    }
+}
+
+.pulse {
+    animation: smooth-pulse 1.5s 5;
+}
