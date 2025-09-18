@@ -7,6 +7,7 @@
 	import { themeStore } from '$lib/stores/savedStores';
 	import { page } from '$app/stores';
 	import { apiClient } from '$lib/apiClient';
+	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import {
 		versionIndexStore,
@@ -35,6 +36,10 @@
 			});
 			onDestroy(unsubscribe);
 		}
+
+		if (window.location.pathname === '/') {
+				goto('/Versions');
+			}
 	});
 
 	const hideMenuOn = /^\/(Countries|Leagues|Versions|Clubs)\/[^/]+$/;
