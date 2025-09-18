@@ -5,8 +5,8 @@
 	import { savedStores } from '$lib/stores/savedStores';
 </script>
 
-<div class="text-center select-none text-textC contrast-125 scroll-smooth">
-	<h1 class="font-fl text-5xl my-20">FUT26 Sammelheft</h1>
+<div class="text-center select-none text-textC contrast-100 font-bold scroll-smooth">
+	<h1 class="font-fl text-5xl my-20 text-white">FUT26 Sammelheft</h1>
 
 	<div class="sticky top-24 w-full justify-center border-b-4 mb-10 pb-5 border-accent px-4 flex">
 		<div class="grid grid-cols-5 md:gap-1 w-[80vw] text-sm md:text-lg md:gap-y-4">

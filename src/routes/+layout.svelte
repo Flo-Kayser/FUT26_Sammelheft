@@ -2,7 +2,10 @@
 	import '../app.css';
 
 	import GlobalMenu from '$lib/svelte/GlobalMenu.svelte';
-    import { page } from '$app/stores';
+	import { browser } from '$app/environment';
+	import { onDestroy } from 'svelte';
+	import { themeStore } from '$lib/stores/savedStores';
+	import { page } from '$app/stores';
 	import { apiClient } from '$lib/apiClient';
 	import { onMount } from 'svelte';
 	import {
@@ -22,13 +25,23 @@
 		].forEach(([url, store]) => {
 			apiClient.fetchData(url).then(store.set);
 		});
+
+		if (browser) {
+			const unsubscribe = themeStore.subscribe(({ colors }) => {
+				if (!colors) return;
+				for (const [name, value] of Object.entries(colors)) {
+					document.documentElement.style.setProperty(name, value);
+				}
+			});
+			onDestroy(unsubscribe);
+		}
 	});
 
 	const hideMenuOn = /^\/(Countries|Leagues|Versions|Clubs)\/[^/]+$/;
 </script>
 
 <main class="relative select-none bg-tri">
-    {#if !hideMenuOn.test($page.url.pathname)}
+	{#if !hideMenuOn.test($page.url.pathname)}
 		<GlobalMenu />
 	{/if}
 

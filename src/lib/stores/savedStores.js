@@ -15,3 +15,11 @@ export const savedStores        = persistent('savedStores', { impossibleSwitch: 
 export const collectedCardsStore = persistent('collectedCards', []);
 export const impossibleCardsStore = persistent('impossibleCards', []);
 export const cardSizeStore      = persistent('cardSize', 180); 
+export const themeStore = persistent('theme-settings', {
+	selectedTheme: 'Classic',
+	colors: {
+		'--color-baseC': '#ffffff',
+		'--color-accent': '#aaaaaa',
+		'--color-textC': '#000000'
+	}
+});

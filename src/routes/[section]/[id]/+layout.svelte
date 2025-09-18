@@ -7,7 +7,12 @@
 		resourceMapStore,
 		sessionStore
 	} from '$lib/stores/sessionStores';
-	import { savedStores, collectedCardsStore, impossibleCardsStore, cardSizeStore } from '$lib/stores/savedStores';
+	import {
+		savedStores,
+		collectedCardsStore,
+		impossibleCardsStore,
+		cardSizeStore
+	} from '$lib/stores/savedStores';
 	import { onMount } from 'svelte';
 	import { apiClient } from '$lib/apiClient';
 	import { goto } from '$app/navigation';
@@ -17,6 +22,30 @@
 	let cards = [];
 	let sortedCards = [];
 	export let children;
+
+	onMount(async () => {
+		cards = await fetchPlayers();
+
+		if (section === 'Leagues' && String(id) === '2118') {
+			cards = Object.fromEntries(
+				Object.entries(cards).filter(([_, c]) => String(c.clubId) !== '114605')
+			);
+		}
+		const resize = () => {
+			if (!containerEl) return;
+			containerWidth = containerEl.clientWidth;
+			containerHeight = window.innerHeight - containerEl.getBoundingClientRect().top - 100;
+			updateGrid();
+		};
+		window.addEventListener('resize', resize);
+		resize();
+		window.addEventListener('wheel', onWheel, { passive: true });
+
+		return () => {
+			window.removeEventListener('resize', resize);
+			window.removeEventListener('wheel', onWheel);
+		};
+	});
 
 	// ---- URL / Titel ----
 	$: id = $page.params.id ?? '';
@@ -107,7 +136,7 @@
 	}
 
 	// ---- Grid / Pagination ----
-	
+
 	$: cardWidth = $cardSizeStore;
 	$: cardHeight = Math.round($cardSizeStore * (400 / 320));
 	let gap = 8;
@@ -120,24 +149,6 @@
 	let totalPages = 0,
 		currentPage = 1;
 	let pagesToShow = [];
-
-	onMount(async () => {
-		cards = await fetchPlayers();
-		const resize = () => {
-			if (!containerEl) return;
-			containerWidth = containerEl.clientWidth;
-			containerHeight = window.innerHeight - containerEl.getBoundingClientRect().top - 100;
-			updateGrid();
-		};
-		window.addEventListener('resize', resize);
-		resize();
-		window.addEventListener('wheel', onWheel, { passive: true });
-
-		return () => {
-			window.removeEventListener('resize', resize);
-			window.removeEventListener('wheel', onWheel);
-		};
-	});
 
 	$: sortedCards = Object.values(cards)
 		.slice()
@@ -182,7 +193,6 @@
 	let scrollCooldown = false;
 
 	function onWheel(e) {
-		// nur wenn mehrere Seiten existieren
 		if (totalPages <= 1 || scrollCooldown) return;
 
 		if (e.deltaY > 0 && currentPage < totalPages) {
@@ -193,9 +203,8 @@
 			updatePagesToShow();
 		}
 
-		// kurze Sperre, damit nicht zu schnell geblättert wird
 		scrollCooldown = true;
-		setTimeout(() => (scrollCooldown = false), 300);
+		setTimeout(() => (scrollCooldown = false), 200);
 	}
 
 	$: if (sortedCards && containerWidth && containerHeight) updateGrid();
@@ -261,18 +270,18 @@
 
 		<!-- Grid -->
 		<div class="flex flex-1 flex-col pb-20">
-			<div bind:this={containerEl} class="flex-1 p-4 content-center justify-center">
+			<div bind:this={containerEl} class="flex-1 p-4 -center justify-center">
 				{@render children()}
 			</div>
 
-				<PlayerSearch
-					{sortedCards}
-					{perPage}
-					on:jump={(e) => {
-						currentPage = e.detail.page;
-						updatePagesToShow();
-					}}
-				/>
+			<PlayerSearch
+				{sortedCards}
+				{perPage}
+				on:jump={(e) => {
+					currentPage = e.detail.page;
+					updatePagesToShow();
+				}}
+			/>
 
 			<OverviewSettings />
 

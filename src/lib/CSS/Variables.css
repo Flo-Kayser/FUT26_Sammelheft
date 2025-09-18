@@ -49,9 +49,9 @@
 
 /* Deine Variablen wie gehabt */
 @theme {
-  --color-baseC:  #0a0a03;
-  --color-accent: #06691c;
-  --color-textC:  #fffefc;
+  --color-baseC:  #000000;
+  --color-accent: #000000;
+  --color-textC:  #000000;
 }
 :root {
   --tile: 26px;

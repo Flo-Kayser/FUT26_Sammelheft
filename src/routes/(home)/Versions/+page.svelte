@@ -13,6 +13,8 @@
 
 	onMount(() => handleScroll(items));
 
+	
+
 	$: {
 		const q = ($sessionStore.searchQuery ?? '').toLowerCase().trim();
 		const all = Object.entries($versionIndexStore?.versions ?? {}).map(([id, v]) => ({ ...v, id }));
@@ -26,8 +28,6 @@
 
 		// --- Zähler direkt hier ---
 		const rm        = $resourceMapStore?.data ?? {};
-		const variant   = $savedStores.displayedCardsVariant || 'all';
-		const bitMask   = BIT[variant] ?? 0;
 		const collected = new Set($collectedCardsStore);
 		const impossible= new Set($impossibleCardsStore);
 
@@ -36,7 +36,6 @@
 			let total = 0, got = 0;
 			for (const [rid, e] of Object.entries(rm)) {
 				if (!e || String(e.v) !== String(v.id)) continue;
-				if (variant !== 'all' && !(e.m & bitMask)) continue;
 				total++;
 				if (collected.has(Number(rid)) || impossible.has(Number(rid))) got++;
 			}
@@ -59,7 +58,7 @@
 		>
 			<button
 				on:click={() => navToCardsSite('Versions', version.id)}
-				class="relative flex h-full w-full items-center justify-between px-2"
+				class="relative flex h-full w-full items-center cursor-pointer justify-between px-2"
 			>
 				<div class="flex h-full items-center gap-2">
 					<img src={version.details.url} class="h-full contrast-75 py-1" alt="" />
