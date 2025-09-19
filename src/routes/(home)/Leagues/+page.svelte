@@ -89,7 +89,7 @@
 	{#each filteredLeagues as league, i}
 		<div
 			bind:this={items[i]}
-			class="border-2 pl-8 border-accent group/listItem relative flex flex-col transition-all duration-300 hover:-translate-y-1 hover:brightness-110"
+			class="border-2 pl-8 border-accent group/listItem relative flex flex-col transition-all duration-300 hover:-translate-y-1 hover:brightness-110 text-sm md:text-base"
 			style="background:linear-gradient(110deg,var(--color-baseC) 30%,var(--color-accent) 70%);
 			       opacity:0;pointer-events:none;"
 		>
@@ -98,18 +98,18 @@
 				on:click={() => navToCardsSite('Leagues', league.id)}
 				class="flex w-full items-center cursor-pointer justify-between px-2 h-16"
 			>
-				<div class="flex items-center h-full gap-4">
+				<div class="flex items-center h-full gap-2 md:gap-4">
 					{#if league.cId === null}
 						<img
 							src="https://cdn.easysbc.io/fc26/clubs/114605.png"
 							alt=""
-							class="h-full py-4 contrast-75"
+							class="h-full py-6 contrast-75 hidden md:block"
 						/>
 					{:else}
 						<img
 							src={`https://cdn.easysbc.io/fc26/countries/${league.cId}.png`}
 							alt=""
-							class="h-full py-6"
+							class="h-full py-6 hidden md:block"
 						/>
 					{/if}
 					<img
@@ -122,7 +122,7 @@
 							img.onerror = null; 
 						}}
 					/>
-					<span>{league.name}</span>
+					<span class="whitespace-nowrap">{league.name}</span>
 				</div>
 				<div class="flex items-center text-textC gap-2">
 					<span>{totals[league.id]?.collected ?? 0}</span>/
@@ -142,7 +142,7 @@
 
 		<!-- Clubs -->
 		{#if expandedLeagueId === league.id}
-			<div class="grid grid-cols-2 px-8 gap-2">
+			<div class="grid md:grid-cols-2 px-2 md:px-8 gap-2">
 				{#each league.clubIds ?? [] as cid, j}
 					{@const club = clubTotals[league.id]?.[cid.id]}
 					{#if !(league.id == 2118 && String(cid.id).includes('_'))}
@@ -154,7 +154,7 @@
 										: cid.id;
 								navToCardsSite('Clubs', clubId);
 							}}
-							class="flex odd:pl-6 even:pr-6 px-2 py-1 h-8 justify-between cursor-pointer"
+							class="flex pl-2 md:odd:pl-6 pr-2 md:even:pr-6 px-2 py-1 h-8 justify-between cursor-pointer text-xs md:text-base"
 							style="background:linear-gradient(to {j % 2 === 0
 								? 'left'
 								: 'right'}, var(--color-accent) 40%, transparent 100%);"
@@ -176,7 +176,7 @@
 								{/if}
 								<span>{cid.name}</span>
 							</div>
-							<div class="flex gap-1">
+							<div class="flex gap-1 items-center">
 								<span>{club?.collected ?? 0}</span>/<span>{club?.total ?? 0}</span>
 							</div>
 						</button>

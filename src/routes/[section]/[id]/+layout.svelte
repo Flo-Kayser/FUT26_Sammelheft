@@ -207,6 +207,25 @@
 		setTimeout(() => (scrollCooldown = false), 200);
 	}
 
+	// ---- Swipe Support ----
+	let touchStartX = 0;
+	function handleTouchStart(e) {
+		touchStartX = e.touches[0].clientX;
+	}
+	function handleTouchEnd(e) {
+		if (totalPages <= 1) return;
+		const deltaX = e.changedTouches[0].clientX - touchStartX;
+		const threshold = 40; // px
+		if (Math.abs(deltaX) > threshold) {
+			if (deltaX < 0 && currentPage < totalPages) {
+				currentPage += 1;
+			} else if (deltaX > 0 && currentPage > 1) {
+				currentPage -= 1;
+			}
+			updatePagesToShow();
+		}
+	}
+
 	$: if (sortedCards && containerWidth && containerHeight) updateGrid();
 	$: pagedCards = sortedCards.slice((currentPage - 1) * perPage, currentPage * perPage);
 	$: sessionStore.update((s) => ({ ...s, pagedCards }));
@@ -223,7 +242,7 @@
 
 	<div class="relative w-full h-full text-white flex flex-col">
 		<!-- Header / Counts -->
-		<div class="w-full relative h-20 flex items-center gap-4 px-4">
+		<div class="w-full relative  md:h-20 flex items-center gap-2 md:gap-4 md:px-4 py-2 flex-wrap md:flex-nowrap justify-end">
 			<div class="flex -space-x-2 w-full">
 				<button
 					on:click={() => window.history.back()}
@@ -232,14 +251,15 @@
 					<div
 						class="flex gap-1 bg-black/50 text-white pr-6 px-3 py-1 [clip-path:polygon(0_0,calc(100%-1px)_0%,calc(100%-15px)_50%,calc(100%-1px)_100%,0_100%)]"
 					>
-						<span>Zurück</span>
+						<span class="hidden md:block">Zurück</span>
+						<span class="block md:hidden">←</span>
 					</div>
 				</button>
 				<div
-					class="bg-white/60 text-2xl w-full font-bold text-black px-1 flex items-center [clip-path:polygon(16px_0,100%_0%,100%_100%,16px_100%,0_50%)]"
+					class="bg-white/60 text-base whitespace-nowrap md:text-2xl w-full font-bold text-black px-1 py-1 flex items-center [clip-path:polygon(16px_0,100%_0%,100%_100%,16px_100%,0_50%)]"
 				>
 					<div
-						class="flex gap-1 bg-white/80 text-black font-black w-full justify-center p-0.5 [clip-path:polygon(16px_0,100%_0%,100%_100%,16px_100%,2px_50%)]"
+						class="flex gap-1 bg-white/80 h-full items-center text-black font-black w-full justify-center p-0.5 [clip-path:polygon(15px_0,100%_0%,100%_100%,15px_100%,2px_50%)]"
 					>
 						<h2>{title}</h2>
 					</div>
@@ -269,7 +289,7 @@
 		</div>
 
 		<!-- Grid -->
-		<div class="flex flex-1 flex-col pb-20">
+		<div class="flex flex-1 flex-col pb-20 z-0">
 			<div bind:this={containerEl} class="flex-1 p-4 -center justify-center">
 				{@render children()}
 			</div>
@@ -285,8 +305,12 @@
 
 			<OverviewSettings />
 
-			<!-- Pagination Controls im gleichen Stil wie dein Beispiel -->
-			<section class="absolute bottom-4 left-1/2 -translate-x-1/2 select-none text-white">
+			<!-- Pagination with swipe -->
+			<section
+				class="absolute bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 select-none text-white"
+				on:touchstart={handleTouchStart}
+				on:touchend={handleTouchEnd}
+			>
 				{#if totalPages > 1}
 					<div class="flex items-center justify-center gap-2">
 						<button
