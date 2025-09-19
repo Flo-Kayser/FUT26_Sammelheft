@@ -47,7 +47,7 @@
 									? '[clip-path:polygon(2px_0,100%_0%,100%_100%,2px_100%,10px_50%)]'
 									: '[clip-path:polygon(2px_0,calc(100%-8px)_0%,100%_50%,calc(100%-8px)_100%,2px_100%,10px_50%)]'
 						}
-						${activeHref === item.href ? 'bg-accent text-baseC' : 'bg-baseC text-white'}             
+						${activeHref === item.href ? 'bg-accent text-baseC' : 'bg-baseC text-textC'}             
 					`}
 				>
 					{item.label}

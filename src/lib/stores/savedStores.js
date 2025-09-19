@@ -16,10 +16,10 @@ export const collectedCardsStore = persistent('collectedCards', []);
 export const impossibleCardsStore = persistent('impossibleCards', []);
 export const cardSizeStore      = persistent('cardSize', 180); 
 export const themeStore = persistent('theme-settings', {
-	selectedTheme: 'Classic',
+	selectedTheme: 'Green',
 	colors: {
-		'--color-baseC': '#ffffff',
-		'--color-accent': '#aaaaaa',
-		'--color-textC': '#000000'
+		'--color-baseC': '#0a0a03',
+		'--color-accent': '#06691c',
+		'--color-textC': '#fffefc'
 	}
 });
