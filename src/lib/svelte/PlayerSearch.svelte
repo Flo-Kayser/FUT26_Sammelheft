@@ -39,7 +39,7 @@
 	}
 </script>
 
-<div class="fixed bottom-4 left-4 w-64 z-20 max-w-2/3" >
+<div class="fixed bottom-4 left-4 z-20 max-w-2/3" >
 	<input
 		type="text"
 		class="w-full rounded border px-3 py-1 text-black bg-white/40 outline-none focus:outline-black/80"

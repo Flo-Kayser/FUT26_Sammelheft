@@ -40,10 +40,14 @@
 		window.addEventListener('resize', resize);
 		resize();
 		window.addEventListener('wheel', onWheel, { passive: true });
+		window.addEventListener('touchstart', handleTouchStart, { passive: true });
+		window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
 		return () => {
 			window.removeEventListener('resize', resize);
 			window.removeEventListener('wheel', onWheel);
+			window.removeEventListener('touchstart', handleTouchStart);
+			window.removeEventListener('touchend', handleTouchEnd);
 		};
 	});
 
@@ -72,6 +76,7 @@
 
 	// ---- Counts ----
 	const BIT = { all: 1, noBase: 2, onlyBest: 4, onlyBestSpecial: 8 };
+
 	function matchingIds(rm, section, id, matchesVariant) {
 		return Object.entries(rm)
 			.filter(([_, e]) => {
@@ -97,6 +102,11 @@
 	$: totalPossible = (() => {
 		const rm = $resourceMapStore?.data ?? {};
 		if (!section || !id) return 0;
+
+		if (section === 'Versions') {
+			return matchingIds(rm, section, id, () => true).length;
+		}
+
 		const variant = $savedStores.displayedCardsVariant || 'all';
 		const bitMask = BIT[variant] ?? BIT.all;
 		const matchesVariant = (e) => variant === 'all' || e.m & bitMask;
@@ -106,9 +116,17 @@
 	$: collectedCount = (() => {
 		const rm = $resourceMapStore?.data ?? {};
 		if (!section || !id) return 0;
-		const variant = $savedStores.displayedCardsVariant || 'all';
-		const bitMask = BIT[variant] ?? BIT.all;
-		const matchesVariant = (e) => variant === 'all' || e.m & bitMask;
+
+		const matchesVariant =
+			section === 'Versions'
+				? () => true
+				: (e) => {
+						const variant = $savedStores.displayedCardsVariant || 'all';
+						if (variant === 'all') return true;
+						const bitMask = BIT[variant] ?? BIT.all;
+						return (e.m & bitMask) !== 0;
+					};
+
 		const ids = matchingIds(rm, section, id, matchesVariant);
 		const collected = new Set($collectedCardsStore);
 		const impossible = new Set($impossibleCardsStore);
@@ -209,13 +227,15 @@
 
 	// ---- Swipe Support ----
 	let touchStartX = 0;
+
 	function handleTouchStart(e) {
 		touchStartX = e.touches[0].clientX;
 	}
+
 	function handleTouchEnd(e) {
-		if (totalPages <= 1) return;
 		const deltaX = e.changedTouches[0].clientX - touchStartX;
-		const threshold = 40; // px
+		const threshold = 40;
+
 		if (Math.abs(deltaX) > threshold) {
 			if (deltaX < 0 && currentPage < totalPages) {
 				currentPage += 1;
@@ -223,6 +243,7 @@
 				currentPage -= 1;
 			}
 			updatePagesToShow();
+			e.preventDefault();
 		}
 	}
 
@@ -242,7 +263,9 @@
 
 	<div class="relative w-full h-full text-white flex flex-col">
 		<!-- Header / Counts -->
-		<div class="w-full relative  md:h-20 flex items-center gap-2 md:gap-4 md:px-4 py-2 flex-wrap md:flex-nowrap justify-end">
+		<div
+			class="w-full relative md:h-20 flex items-center gap-2 md:gap-4 md:px-4 py-2 flex-wrap md:flex-nowrap justify-end"
+		>
 			<div class="flex -space-x-2 w-full">
 				<button
 					on:click={() => window.history.back()}
@@ -305,11 +328,9 @@
 
 			<OverviewSettings />
 
-			<!-- Pagination with swipe -->
+			<!-- Pagination -->
 			<section
-				class="absolute bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 select-none text-white"
-				on:touchstart={handleTouchStart}
-				on:touchend={handleTouchEnd}
+				class="fixed bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 select-none text-white"
 			>
 				{#if totalPages > 1}
 					<div class="flex items-center justify-center gap-2">
