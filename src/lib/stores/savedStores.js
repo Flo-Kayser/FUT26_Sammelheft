@@ -23,3 +23,10 @@ export const themeStore = persistent('theme-settings', {
 		'--color-textC': '#fffefc'
 	}
 });
+
+export const cardSettingsStore = persistent('card-settings', {
+	showAlternativePositions: true,
+	showWeakFootAndSkillMoves: true,
+	showPlaystyles:true,
+	showLogosForSBC: true,
+});

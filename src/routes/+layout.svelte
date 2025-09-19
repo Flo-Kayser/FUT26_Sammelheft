@@ -15,6 +15,12 @@
 		countriesIndexStore,
 		leaguesIndexStore
 	} from '$lib/stores/sessionStores';
+
+	import { dev } from '$app/environment';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+
+	injectAnalytics({ mode: dev ? 'development' : 'production' });
+
 	export let children;
 
 	onMount(() => {
@@ -38,8 +44,8 @@
 		}
 
 		if (window.location.pathname === '/') {
-				goto('/Versions');
-			}
+			goto('/Versions');
+		}
 	});
 
 	const hideMenuOn = /^\/(Countries|Leagues|Versions|Clubs)\/[^/]+$/;
