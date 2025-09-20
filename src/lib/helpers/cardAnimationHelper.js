@@ -61,8 +61,8 @@ export function collectAnimation(card, btnEl) {
 		maskImage:       'linear-gradient(to right, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 60%)',
 		WebkitMaskRepeat: 'no-repeat',
 		maskRepeat:        'no-repeat',
-		WebkitMaskSize: '200% 100%',
-		maskSize:        '200% 100%',
+		WebkitMaskSize: '200% 200%',
+		maskSize:        '200% 200%',
 		WebkitMaskPosition: '0% 0%',
 		maskPosition:        '0% 0%'
 	});
@@ -88,7 +88,7 @@ export function collectAnimation(card, btnEl) {
 		grayClone.animate(
 			[
 				{ WebkitMaskPosition: '0% 0%', maskPosition: '0% 0%' },
-				{ WebkitMaskPosition: '100% 0%', maskPosition: '100% 0%' }
+				{ WebkitMaskPosition: '120% 0%', maskPosition: '120% 0%' }
 			],
 			{ duration: 800, easing: 'ease-out', fill: 'forwards' }
 		).finished
