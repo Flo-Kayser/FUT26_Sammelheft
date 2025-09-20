@@ -3,9 +3,11 @@
 	import {
 		cardSizeStore,
 		collectedCardsStore,
-		impossibleCardsStore
+		impossibleCardsStore,
+		cardSettingsStore
 	} from '$lib/stores/savedStores';
 	import { versionIndexStore } from '$lib/stores/sessionStores';
+	import PlayStylesHelper from './Helper/PlayStylesHelper.svelte';
 
 	const fallbackImg = 'https://cdn.easysbc.io/fc26/players/240333.png';
 	const baseWidth = 180;
@@ -51,14 +53,16 @@
 
 	$: isCollected = $collectedCardsStore.includes(card.resourceId);
 	$: isImpossible = $impossibleCardsStore.includes(card.resourceId);
-	$: shouldGray = (!isCollected || isImpossible);
+	$: shouldGray = !isCollected || isImpossible;
+
+	$: console.log(card)
 </script>
 
 {#if card}
 	<div class="card" style="width:{cardWidth}px; height:{cardHeight}px;">
 		<div
 			class="flex items-center justify-center relative *:absolute contrast-100"
-            class:contrast-50={isImpossible}
+			class:contrast-50={isImpossible}
 			class:grayscale-100={shouldGray}
 			style="width:{baseWidth}px;
 		       height:{(baseWidth * 400) / 320}px;
@@ -68,7 +72,9 @@
 		>
 			<!-- Impossible Label -->
 			{#if isImpossible}
-				<div class="top-13 -left-6 z-50 px-10 rounded -rotate-50 bg-black/80 text-white/60">Impossible</div>
+				<div class="top-13 -left-6 z-50 px-10 rounded -rotate-50 bg-black/80 text-white/60">
+					Impossible
+				</div>
 			{/if}
 			<!-- Card Background -->
 			<img src={version?.details?.url} class="w-full" alt="" />
@@ -133,6 +139,75 @@
 					/>
 				{/if}
 			</div>
+			<!-- PlayStyles -->
+			{#if $cardSettingsStore.showPlaystyles}
+				<div
+					class={`absolute left-[4.5%] flex flex-col gap-0.5 ${
+						card?.playStylesPlus?.length === 1
+							? 'top-[54%]'
+							: card?.playStylesPlus?.length === 2
+								? 'top-[44%]'
+								: card?.playStylesPlus?.length === 3
+									? 'top-[42%]'
+									: card?.playStylesPlus?.length === 4
+										? 'top-[40%]'
+										: card?.playStylesPlus?.length === 5
+											? 'top-[36%]'
+											: 'top-[30%]'
+					}`}
+				>
+					{#each card?.playStylesPlus as playStylePlusId}
+						<PlayStylesHelper
+							playStyleId={playStylePlusId}
+							lineColor={secondaryColor}
+							bgColor={primaryColor}
+							class="size-5"
+						/>
+					{/each}
+				</div>
+			{/if}
+			<!-- Alternative Position -->
+			{#if $cardSettingsStore.showAlternativePositions}
+				<div class="top-[25%] right-[4%] flex flex-col gap-0.75 items-center">
+					{#each card?.possiblePositions.filter((pos) => pos !== card?.preferredPosition) as position}
+						<div
+							style={`color: ${primaryColor}; background-color: ${secondaryColor}`}
+							class="w-5 rounded border items-end flex justify-center text-center text-[7px] p-1 pt-1.25 leading-0 scale-y-125"
+						>
+							{position}
+						</div>
+					{/each}
+				</div>
+			{/if}
+
+			{#if $cardSettingsStore.showWeakFootAndSkillMoves}
+				<div class="top-[59.5%] right-[4%] flex flex-col gap-0.75 items-center">
+					<div
+						style={`color: ${primaryColor}; background-color: ${secondaryColor}`}
+						class="w-5 rounded border items-end flex justify-center text-center text-[7px] p-1 pt-1.25 leading-0 scale-y-125"
+					>
+						{card.preferredFoot.split('')[0]}
+					</div>
+					<div
+						style={`color: ${primaryColor}; background-color: ${secondaryColor}`}
+						class="w-5 rounded border items-center flex justify-center text-[7px]  scale-y-105"
+					>
+						<span class="h-full items-center flex">{card?.skillMoves}</span>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							class="size-1.5"
+							viewBox="0 0 24 24"
+							><path
+								fill="currentColor"
+								d="m12 16.102l-3.63 2.192q-.16.079-.297.064q-.136-.016-.265-.094q-.13-.08-.196-.226t-.012-.319l.966-4.11l-3.195-2.77q-.135-.11-.178-.263t.019-.293t.165-.23q.104-.087.28-.118l4.216-.368l1.644-3.892q.068-.165.196-.238T12 5.364t.288.073t.195.238l1.644 3.892l4.215.368q.177.03.281.119q.104.088.166.229q.061.14.018.293t-.178.263l-3.195 2.77l.966 4.11q.056.171-.011.318t-.197.226q-.128.08-.265.095q-.136.015-.296-.064z"
+							/></svg
+						>
+						<span>{card?.weakFoot}</span>
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}

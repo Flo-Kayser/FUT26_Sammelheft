@@ -4,6 +4,7 @@ export const versionIndexStore = writable({});
 export const resourceMapStore = writable({});
 export const countriesIndexStore = writable({});
 export const leaguesIndexStore = writable({});
+export const playStylesStore = writable({});
 
 export const sessionStore = writable({
     searchQuery: "",
