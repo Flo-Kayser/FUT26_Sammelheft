@@ -2,21 +2,25 @@
 	import { sessionStore } from '$lib/stores/sessionStores';
 	import { toggleCard } from '$lib/helpers/collectionHelpers';
 	import RenderedCard from '$lib/svelte/RenderedCard.svelte';
+	import { collectedCardsStore, impossibleCardsStore, savedStores } from '$lib/stores/savedStores';
+	import { collectAnimation } from '$lib/helpers/cardAnimationHelper';
 
-	import { savedStores, collectedCardsStore, impossibleCardsStore } from '$lib/stores/savedStores';
-
+	function handleClick(e, card) {
+		if (
+			$collectedCardsStore.includes(card.resourceId) ||
+			$impossibleCardsStore.includes(card.resourceId) ||
+			$savedStores.impossibleSwitch
+		) {
+			toggleCard(card.resourceId);
+		} else {
+			collectAnimation(card, e.currentTarget);
+			setTimeout(() => toggleCard(card.resourceId), 2000);
+		}
+	}
 </script>
 
 {#each Object.values($sessionStore.pagedCards) as card}
-	<button
-		on:click={() => toggleCard(card.resourceId)}
-		class:pulse={$sessionStore.highlightedCardId === card.resourceId}
-		on:animationend={() => {
-			if ($sessionStore.highlightedCardId === card.resourceId) {
-				sessionStore.update((s) => ({ ...s, highlightedCardId: null }));
-			}
-		}}
-	>
+	<button data-card-id={card.resourceId} on:click={(e) => handleClick(e, card)}>
 		<RenderedCard {card} />
 	</button>
 {/each}

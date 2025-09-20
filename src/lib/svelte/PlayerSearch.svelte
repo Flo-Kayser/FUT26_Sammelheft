@@ -15,15 +15,22 @@
 	});
 
 	$: if (query.length >= 2) {
-		const q = query.toLowerCase();
+		const q = normalizeString(query);
 		results = sortedCards
 			.filter(
 				(p) =>
-					(p.name ?? '').toLowerCase().includes(q) || (p.cardName ?? '').toLowerCase().includes(q)
+					normalizeString(p.name).includes(q) || normalizeString(p.cardName).includes(q)
 			)
 			.slice(0, 15);
 	} else {
 		results = [];
+	}
+
+	function normalizeString(str) {
+		return str
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '')
+			.toLowerCase();
 	}
 
 	function gotoPlayer(player) {
