@@ -5,11 +5,11 @@
 	import { savedStores, collectedCardsStore, impossibleCardsStore } from '$lib/stores/savedStores';
 
 	const navItems = [
-		{ href: '/Versions', label: 'Kartenübersicht' },
-		{ href: '/Batches', label: 'Batches' },
-		{ href: '/allCardsFrom', label: 'Alle Karten von' },
-		{ href: '/FAQ', label: 'FAQ' },
-		{ href: '/Settings', label: 'Einstellungen' }
+		{ href: 'Versions', label: 'Kartenübersicht' },
+		{ href: 'Batches', label: 'Batches' },
+		{ href: 'allCardsFrom', label: 'Alle Karten von' },
+		{ href: 'FAQ', label: 'FAQ' },
+		{ href: 'Settings/CardSettings', label: 'Einstellungen' }
 	];
 
 	const variantOptions = [
@@ -46,16 +46,22 @@
 		return allCollected.filter((rid) => matchesVariant(rm[rid], variant)).length;
 	})();
 
-	$: activeHref = navItems.find((item) => item.href === $page.url.pathname)?.href || '/Versions';
+	$: activeHref = '/' +
+		navItems.find((item) => $page.url.pathname.includes(item.href.split('/')[0]))?.href ||
+		'Versions';
+
+	$: isShowCounts = ['/Versions', '/Leagues', '/Countries'].some((p) =>
+		$page.url.pathname.startsWith(p)
+	);
 </script>
 
-<div class="h-20 w-full text-white sticky top-0 z-50 left-0 flex contrast-125 md:px-4 p-2">
+<div class="w-full text-white sticky top-0 z-50 left-0 flex contrast-125 md:px-4 p-2">
 	<!-- lg display -->
 	<div class="w-full lg:flex hidden justify-between items-center">
 		<nav class="flex -space-x-1">
 			{#each navItems as item, i}
 				<a
-					href={item.href}
+					href={'/' + item.href}
 					class=" bg-accent py-2 px-1
 				       first:[clip-path:polygon(0_0,calc(100%-10px)_0%,100%_50%,calc(100%-10px)_100%,0_100%)]
 				       [clip-path:polygon(0_0,calc(100%-10px)_0%,100%_50%,calc(100%-10px)_100%,0_100%,10px_50%)]
@@ -108,33 +114,38 @@
 			bind:value={activeHref}
 		>
 			{#each navItems as item}
-				<option value={item.href}>{item.label}</option>
+				<option value={'/'+item.href}>{item.label}</option>
 			{/each}
 		</select>
 		<span class="absolute right-2 top-3 text-xl pointer-events-none">☰</span>
-		<div class="flex gap-2 justify-between flex-row-reverse">
-			<div
-				class="flex max-w-1/2 bg-baseC text-sm md:text-xl text-textC py-2 px-2 border-2 md:border-4 border-accent gap-2"
-			>
-				<span class="block md:hidden">Ges:</span>
-				<span class="hidden md:block">Gesammelt:</span>
-				<div class="flex gap-1">
-					<span>{collectedCount}</span> /
-					<span>{totalCount}</span>
+
+		{#if isShowCounts}
+			<div class="flex gap-2 justify-between flex-row-reverse">
+				<div
+					class="flex max-w-1/2 bg-baseC text-sm md:text-xl text-textC py-2 px-2 border-2 md:border-4 border-accent gap-2"
+				>
+					<span class="block md:hidden">Ges:</span>
+					<span class="hidden md:block">Gesammelt:</span>
+					<div class="flex gap-1">
+						<span>{collectedCount}</span> /
+						<span>{totalCount}</span>
+					</div>
+				</div>
+
+				<div class="flex relative">
+					<select
+						class="px-3 py-2 text-textC text-xs md:text-lg bg-baseC border-2 md:border-4 border-accent appearance-none focus:outline-none pr-8"
+						bind:value={$savedStores.displayedCardsVariant}
+					>
+						{#each variantOptions as opt}
+							<option value={opt.value}>{opt.label}</option>
+						{/each}
+					</select>
+					<span class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none md:text-lg"
+						>☰</span
+					>
 				</div>
 			</div>
-
-			<div class="flex relative">
-				<select
-					class="px-3 py-2 text-textC text-xs md:text-lg bg-baseC border-2 md:border-4 border-accent appearance-none focus:outline-none pr-8"
-					bind:value={$savedStores.displayedCardsVariant}
-				>
-					{#each variantOptions as opt}
-						<option value={opt.value}>{opt.label}</option>
-					{/each}
-				</select>
-				<span class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none md:text-lg">☰</span>
-			</div>
-		</div>
+		{/if}
 	</div>
 </div>

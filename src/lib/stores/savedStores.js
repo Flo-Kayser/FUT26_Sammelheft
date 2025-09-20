@@ -29,4 +29,5 @@ export const cardSettingsStore = persistent('card-settings', {
 	showWeakFootAndSkillMoves: true,
 	showPlaystyles:true,
 	showLogosForSBC: true,
+	playAnimation: true,
 });
