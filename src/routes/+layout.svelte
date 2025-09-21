@@ -53,7 +53,6 @@
 
 	const hideMenuOn = /^\/(Countries|Leagues|Versions|Clubs)\/[^/]+$/;
 
-	$: console.log($playStylesStore)
 </script>
 
 <main class="relative select-none bg-tri">

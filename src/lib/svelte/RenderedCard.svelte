@@ -55,7 +55,6 @@
 	$: isImpossible = $impossibleCardsStore.includes(card.resourceId);
 	$: shouldGray = !isCollected || isImpossible;
 
-	$: console.log(card)
 </script>
 
 {#if card}

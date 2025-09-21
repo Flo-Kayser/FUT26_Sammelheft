@@ -29,7 +29,12 @@
 </script>
 
 {#each Object.values($sessionStore.pagedCards) as card}
-	<button data-card-id={card.resourceId} on:click={(e) => handleClick(e, card)}>
+	<button
+		data-card-id={card.resourceId}
+		on:click={(e) => handleClick(e, card)}
+		on:animationend={() => sessionStore.update((s) => ({ ...s, highlightedCardId: null }))}
+		class:pulse={String(card.resourceId) === String($sessionStore.highlightedCardId)}
+	>
 		<RenderedCard {card} />
 	</button>
 {/each}
