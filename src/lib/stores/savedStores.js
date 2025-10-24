@@ -11,7 +11,7 @@ function persistent(key, initial) {
 	return store;
 }
 
-export const savedStores        = persistent('savedStores', { impossibleSwitch: false, displayedCardsVariant: 'all' });
+export const savedStores        = persistent('savedStores', { impossibleSwitch: false, displayedCardsVariant: 'all', allCardsDisplaySwitch: true });
 export const collectedCardsStore = persistent('collectedCards', []);
 export const impossibleCardsStore = persistent('impossibleCards', []);
 export const cardSizeStore      = persistent('cardSize', 180); 

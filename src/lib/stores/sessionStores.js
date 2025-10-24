@@ -6,6 +6,8 @@ export const countriesIndexStore = writable({});
 export const leaguesIndexStore = writable({});
 export const playStylesStore = writable({});
 
+export const assetIdToNameStore = writable({});
+
 export const sessionStore = writable({
     searchQuery: "",
     pagedCards: [],

@@ -1,5 +1,8 @@
 <script>
-	export let card;
+	export let card,
+		origin = 'default',
+		displayMode= false,
+		customCardSize;
 	import {
 		cardSizeStore,
 		collectedCardsStore,
@@ -12,7 +15,7 @@
 	const fallbackImg = 'https://cdn.easysbc.io/fc26/players/240333.png';
 	const baseWidth = 180;
 
-	$: cardWidth = $cardSizeStore;
+	$: cardWidth = origin === 'default' ? $cardSizeStore : customCardSize;
 	$: cardHeight = Math.round((cardWidth * 400) / 320);
 	$: scale = cardWidth / baseWidth;
 
@@ -53,13 +56,12 @@
 
 	$: isCollected = $collectedCardsStore.includes(card.resourceId);
 	$: isImpossible = $impossibleCardsStore.includes(card.resourceId);
-	$: shouldGray = !isCollected || isImpossible;
+	$: shouldGray = (!isCollected || isImpossible) && displayMode === false ;
 
-	$: console.log(card);
 </script>
 
 {#if card}
-	<div class="card cursor-pointer" style="width:{cardWidth}px; height:{cardHeight}px;">
+	<div class="card" style="width:{cardWidth}px; height:{cardHeight}px;">
 		<div
 			class="flex items-center justify-center relative *:absolute contrast-100"
 			class:contrast-50={isImpossible}
@@ -209,7 +211,7 @@
 				</div>
 			{/if}
 			<!-- SBC Icon -->
-			 {#if card?.sbcPrice  && $cardSettingsStore.showLogosForSBC}
+			{#if card?.sbcPrice && $cardSettingsStore.showLogosForSBC}
 				<div class="absolute right-2 w-8 top-[84%]">
 					<img
 						src={`https://raw.githubusercontent.com/Flo-Kayser/db_futCards/refs/heads/main/staticData/sbcIcon.png`}

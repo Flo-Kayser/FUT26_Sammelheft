@@ -30,6 +30,7 @@
 
 {#each Object.values($sessionStore.pagedCards) as card}
 	<button
+		class="cursor-pointer"
 		data-card-id={card.resourceId}
 		on:click={(e) => handleClick(e, card)}
 		on:animationend={() => sessionStore.update((s) => ({ ...s, highlightedCardId: null }))}
