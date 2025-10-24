@@ -169,7 +169,21 @@
 	let pagesToShow = [];
 
 	$: sortedCards = Object.values(cards)
-		.slice()
+		.filter(card => {
+		const id = Number(card.resourceId);
+		const collected = new Set($collectedCardsStore);
+		const impossible = new Set($impossibleCardsStore);
+
+		const showCollected = $sessionStore.showCollectedCards;
+		const showImpossible = $sessionStore.showImpossibleCards;
+		const showMissing = $sessionStore.showMissingCards;
+
+		if (!showCollected && !showImpossible && !showMissing) return true;
+		if (showCollected && collected.has(id)) return true;
+		if (showImpossible && impossible.has(id)) return true;
+		if (showMissing && !collected.has(id) && !impossible.has(id)) return true;
+		return false;
+	})
 		.sort((a, b) =>
 			a.rating !== b.rating
 				? b.rating - a.rating

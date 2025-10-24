@@ -15,13 +15,12 @@
 		countriesIndexStore,
 		leaguesIndexStore,
 		playStylesStore
-
 	} from '$lib/stores/sessionStores';
 
-	import { dev } from '$app/environment';
-	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+	// import { dev } from '$app/environment';
+	// import { injectAnalytics } from '@vercel/analytics/sveltekit';
 
-	injectAnalytics({ mode: dev ? 'development' : 'production' });
+	// injectAnalytics({ mode: dev ? 'development' : 'production' });
 
 	export let children;
 
@@ -31,7 +30,10 @@
 			['index-data/countriesIndex.json', countriesIndexStore],
 			['index-data/leaguesIndex.json', leaguesIndexStore],
 			['index-data/resourceMap.json', resourceMapStore],
-			['https://raw.githubusercontent.com/Flo-Kayser/db_futCards/refs/heads/main/staticData/playStyles.json',playStylesStore]
+			[
+				'https://raw.githubusercontent.com/Flo-Kayser/db_futCards/refs/heads/main/staticData/playStyles.json',
+				playStylesStore
+			]
 		].forEach(([url, store]) => {
 			apiClient.fetchData(url).then(store.set);
 		});
@@ -52,7 +54,6 @@
 	});
 
 	const hideMenuOn = /^\/(Countries|Leagues|Versions|Clubs)\/[^/]+$/;
-
 </script>
 
 <main class="relative select-none bg-tri">

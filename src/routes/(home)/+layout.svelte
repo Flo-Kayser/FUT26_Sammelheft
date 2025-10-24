@@ -1,6 +1,6 @@
 <script>
 	export let children;
-	import { page } from '$app/state';
+	import { page } from '$app/stores';
 	import { sessionStore } from '$lib/stores/sessionStores';
 	import { savedStores } from '$lib/stores/savedStores';
 </script>
@@ -15,7 +15,7 @@
 					<a
 						href={item.href}
 						class="SubNav w-full after:bg-baseC font-bold"
-						class:activeSubNav={page.url.pathname === item.href}
+						class:activeSubNav={$page.url.pathname === item.href}
 					>
 						<span class="xl:hidden flex pl-1">
 							{item.label_small}
@@ -28,7 +28,7 @@
 			</nav>
 
 			<div
-				class="w-full SubNav px-4 col-span-2 row-start-2 after:bg-accent focus-within:after:bg-baseC {page.url.pathname.includes(
+				class="w-full SubNav px-4 col-span-2 row-start-2 after:bg-accent focus-within:after:bg-baseC {$page.url.pathname.includes(
 					'/Versions'
 				)
 					? 'col-span-5 '
@@ -43,7 +43,7 @@
 			</div>
 
 			<div
-				class="row-start-2 col-span-3 hidden w-full text-sm -space-x-2 items-center py-0.5 px-1 bg-accent [clip-path:polygon(0px_0,calc(100%-14px)_0,calc(100%-0px)_50%,calc(100%-14px)_100%,0px_100%,14px_50%)] {page.url.pathname.includes(
+				class="row-start-2 col-span-3 hidden w-full text-sm -space-x-2 items-center py-0.5 px-1 bg-accent [clip-path:polygon(0px_0,calc(100%-14px)_0,calc(100%-0px)_50%,calc(100%-14px)_100%,0px_100%,14px_50%)] {$page.url.pathname.includes(
 					'/Versions'
 				)
 					? 'hidden'

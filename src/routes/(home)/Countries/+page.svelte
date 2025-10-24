@@ -75,14 +75,14 @@
 		>
 			<button
 				on:click={() => console.log(country.name, country.id)}
-				class="absolute right-0 -top-6 aspect-square rounded-t-sm bg-accent px-2 text-2xl opacity-0 transition-opacity duration-300 group-hover/listItem:opacity-100"
+				class="absolute right-0 -top-6 aspect-square rounded-t-sm cursor-pointer bg-accent px-2 text-2xl opacity-0 transition-opacity duration-300 group-hover/listItem:opacity-100"
 			>
 				☆
 			</button>
 
 			<button
 				on:click={() => navToCardsSite('Countries', country.id)}
-				class="relative flex h-full w-full items-center justify-between px-2"
+				class="relative flex h-full w-full items-center justify-between px-2 cursor-pointer"
 			>
 				<div class="flex h-full items-center gap-2">
 					<img
@@ -91,8 +91,8 @@
 						alt="flagImg"
 						on:error={(e) => {
 							const img = e.currentTarget;
-							img.src = 'https://cdn.easysbc.io/fc26/countries/21.png'; 
-							img.onerror = null; 
+							img.src = 'https://cdn.easysbc.io/fc26/countries/21.png';
+							img.onerror = null;
 						}}
 					/>
 					<span>{country.deName}</span>

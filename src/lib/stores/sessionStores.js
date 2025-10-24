@@ -10,5 +10,8 @@ export const sessionStore = writable({
     searchQuery: "",
     pagedCards: [],
     highlightedCardId: null,
+    showCollectedCards: true,
+    showMissingCards: true,
+    showImpossibleCards: true
 });
 

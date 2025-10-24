@@ -55,10 +55,11 @@
 	$: isImpossible = $impossibleCardsStore.includes(card.resourceId);
 	$: shouldGray = !isCollected || isImpossible;
 
+	$: console.log(card);
 </script>
 
 {#if card}
-	<div class="card" style="width:{cardWidth}px; height:{cardHeight}px;">
+	<div class="card cursor-pointer" style="width:{cardWidth}px; height:{cardHeight}px;">
 		<div
 			class="flex items-center justify-center relative *:absolute contrast-100"
 			class:contrast-50={isImpossible}
@@ -178,7 +179,7 @@
 					{/each}
 				</div>
 			{/if}
-
+			<!-- Weak Foot and Skill Moves -->
 			{#if $cardSettingsStore.showWeakFootAndSkillMoves}
 				<div class="top-[59.5%] right-[4%] flex flex-col gap-0.75 items-center">
 					<div
@@ -189,7 +190,7 @@
 					</div>
 					<div
 						style={`color: ${primaryColor}; background-color: ${secondaryColor}`}
-						class="w-5 rounded border items-center flex justify-center text-[7px]  scale-y-105"
+						class="w-5 rounded border items-center flex justify-center text-[7px] scale-y-105"
 					>
 						<span class="h-full items-center flex">{card?.skillMoves}</span>
 						<svg
@@ -205,6 +206,24 @@
 						>
 						<span>{card?.weakFoot}</span>
 					</div>
+				</div>
+			{/if}
+			<!-- SBC Icon -->
+			 {#if card?.sbcPrice  && $cardSettingsStore.showLogosForSBC}
+				<div class="absolute right-2 w-8 top-[84%]">
+					<img
+						src={`https://raw.githubusercontent.com/Flo-Kayser/db_futCards/refs/heads/main/staticData/sbcIcon.png`}
+						alt="O"
+					/>
+				</div>
+			{/if}
+			<!-- OBJ Icon -->
+			{#if card?.isObjective && $cardSettingsStore.showLogosForSBC}
+				<div class="absolute right-2 w-8 top-[84%]">
+					<img
+						src={`https://raw.githubusercontent.com/Flo-Kayser/db_futCards/refs/heads/main/staticData/objIcon.png`}
+						alt="O"
+					/>
 				</div>
 			{/if}
 		</div>

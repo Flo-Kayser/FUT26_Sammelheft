@@ -21,7 +21,7 @@
 			/>
 			<path d={`${$playStylesStore[playStyleId]?.path}`} fill={lineColor} />
 		</svg>
-	{:else if playStyleId === 7 || playStyleId === 13 || playStyleId === 29}
+	{:else if playStyleId === 7 || playStyleId == 13 || playStyleId === 29}
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109 100" class={$$props.class}>
 			<path
 				d="M54.94 100L108.916 38.9357L83.8323 0H26.2466L0.963867 39.0582L54.94 100Z"

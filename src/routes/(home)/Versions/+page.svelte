@@ -1,35 +1,52 @@
 <script>
 	import { onMount } from 'svelte';
-	import { versionIndexStore, resourceMapStore, sessionStore } from '$lib/stores/sessionStores';
-	import { savedStores, collectedCardsStore, impossibleCardsStore } from '$lib/stores/savedStores';
+	import {
+		versionIndexStore,
+		resourceMapStore,
+		sessionStore
+	} from '$lib/stores/sessionStores';
+	import {
+		savedStores,
+		collectedCardsStore,
+		impossibleCardsStore
+	} from '$lib/stores/savedStores';
 	import { handleScroll } from '$lib/helpers/listScrollControls';
 	import { navToCardsSite } from '$lib/helpers/navigationHelper';
 
 	let items = [];
 	let filteredVersions = [];
-	let totals = {};   
+	let totals = {};          // { [versionId]: { total, collected } }
+	let isCounting = false;   // Flag für UI-Ladeanzeige
 
 	const BIT = { all:1, noBase:2, onlyBest:4, onlyBestSpecial:8 };
 
-	onMount(() => handleScroll(items));
+	/* --------- Mount ---------- */
+	onMount(() => {
+		handleScroll(items);
+		filterVersions();
+		// Counts erst nach dem ersten Render
+		requestIdleCallback ? requestIdleCallback(calcTotals) : setTimeout(calcTotals, 100);
+	});
 
-	
-
-	$: {
+	/* --------- Filtern & Sortieren ---------- */
+	function filterVersions() {
 		const q = ($sessionStore.searchQuery ?? '').toLowerCase().trim();
 		const all = Object.entries($versionIndexStore?.versions ?? {}).map(([id, v]) => ({ ...v, id }));
-
 		filteredVersions = q
 			? all.filter(v => (v?.details?.name ?? '').toLowerCase().includes(q))
 			: all;
-
 		filteredVersions.sort((a,b) => new Date(b.details.createdAt) - new Date(a.details.createdAt));
-		handleScroll(items);
+	}
 
-		// --- Zähler direkt hier ---
-		const rm        = $resourceMapStore?.data ?? {};
-		const collected = new Set($collectedCardsStore);
-		const impossible= new Set($impossibleCardsStore);
+	// neu filtern bei Suchfeld-Änderung
+	$: filterVersions();
+
+	/* --------- Zählung im Hintergrund ---------- */
+	async function calcTotals() {
+		isCounting = true;
+		const rm = $resourceMapStore?.data ?? {};
+		const collected  = new Set($collectedCardsStore);
+		const impossible = new Set($impossibleCardsStore);
 
 		const tmp = {};
 		for (const v of filteredVersions) {
@@ -37,13 +54,13 @@
 			for (const [rid, e] of Object.entries(rm)) {
 				if (!e || String(e.v) !== String(v.id)) continue;
 				total++;
-				if (collected.has(Number(rid)) || impossible.has(Number(rid))) got++;
+				if (collected.has(+rid) || impossible.has(+rid)) got++;
 			}
 			tmp[v.id] = { total, collected: got };
 		}
 		totals = tmp;
+		isCounting = false;
 	}
-
 </script>
 
 <svelte:window on:scroll={() => handleScroll(items)} />
@@ -65,8 +82,12 @@
 					<span>{version.details.name}</span>
 				</div>
 				<div class="flex h-full items-center text-textC">
-					<span>{totals[version.id]?.collected ?? 0}</span>/
-					<span>{totals[version.id]?.total ?? 0}</span>
+					{#if isCounting && !totals[version.id]}
+						<span class="animate-pulse text-gray-400">…</span>
+					{:else}
+						<span>{totals[version.id]?.collected ?? 0}</span> /
+						<span>{totals[version.id]?.total ?? 0}</span>
+					{/if}
 				</div>
 			</button>
 		</div>

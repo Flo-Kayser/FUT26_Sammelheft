@@ -17,7 +17,7 @@ export function collectAnimation(card, btnEl) {
 		position: 'fixed',
 		inset: '0',
 		zIndex: 50,
-		pointerEvents: 'none',
+		pointerEvents: 'all',
 		background: 'rgba(0,0,0,0.7)',
 		opacity: '0',
 		transition: 'opacity .3s ease'
