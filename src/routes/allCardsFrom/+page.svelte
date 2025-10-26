@@ -16,6 +16,7 @@
 	let search = '';
 	let results = [];
 	let selectedPlayer = null;
+	let selectedPlayerCardName = null;
 	let playerCards = [];
 
 	let responsiveCardSize = 150;
@@ -65,6 +66,7 @@
 		search = '';
 		results = [];
 		selectedPlayer = playerFile.name;
+		selectedPlayerCardName = playerFile.cardName;
 		playerCards = Object.entries(playerFile)
 			.filter(([key, _]) => key !== 'name' && key !== 'cardName')
 			.map(([_, value]) => value);
@@ -165,7 +167,7 @@
 						data-card-id={card.resourceId}
 						on:click={(e) => handleClick(e, card)}
 					>
-						<RenderedCard {card} origin={'allCards'} customCardSize={responsiveCardSize} displayMode={$savedStores.allCardsDisplaySwitch} />
+						<RenderedCard {card} origin={'allCards'} customCardSize={responsiveCardSize} displayMode={$savedStores.allCardsDisplaySwitch} cardName={selectedPlayerCardName}/>
 					</button>
 				{/each}
 			</div>

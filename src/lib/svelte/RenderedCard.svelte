@@ -2,7 +2,8 @@
 	export let card,
 		origin = 'default',
 		displayMode= false,
-		customCardSize;
+		customCardSize,
+		cardName
 	import {
 		cardSizeStore,
 		collectedCardsStore,
@@ -93,7 +94,7 @@
 			</div>
 			<!-- Name  -->
 			<div class="top-[64%] left-1/2 -translate-x-1/2 whitespace-nowrap font-b">
-				{card.cardName}
+				{origin !== 'default' ? cardName : card.cardName}
 			</div>
 			<!-- Attributes -->
 			<div class="flex justify-between w-[70%] top-[74%] left-1/2 -translate-x-1/2">
