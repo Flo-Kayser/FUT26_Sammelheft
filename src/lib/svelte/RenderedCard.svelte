@@ -31,11 +31,8 @@
 	$: labels = attributeLabels[isGoalkeeper ? 'TW' : 'notTW'];
 	$: version = $versionIndexStore?.versions?.[card?.versionId] ?? {};
 
-	let imgErrored = false;
 	let dynamicPos = card?.hasDynamicImage;
 	function checkRealSize(e) {
-		imgErrored = false;
-		if (e.currentTarget.src === fallbackImg) imgErrored = true;
 		const img = e.currentTarget;
 		const ratio = img.naturalHeight / img.naturalWidth;
 		if (ratio < 1.3 && ratio > 0.7) {
@@ -46,8 +43,7 @@
 	}
 
 	function handleError(e) {
-		imgErrored = true;
-		e.currentTarget.src = fallbackImg;
+		e.currentTarget.src = `https://cdn.easysbc.io/fc26/players/${card.assetId}.png`;
 	}
 
 	$: primaryColor = version.details?.primaryColor;
@@ -88,9 +84,7 @@
 				on:error={(e) => {
 					handleError(e);
 				}}
-				class="{dynamicPos ? '-top-2.5 left-0' : 'top-2.5 left-5 scale-70'} {imgErrored
-					? 'contrast-0'
-					: ''}"
+				class="{dynamicPos ? '-top-2.5 left-0' : 'top-2.5 left-5 scale-70'}"
 			/>
 			<!-- Rating and Pos -->
 			<div class="top-[18%] left-[15%] flex flex-col -space-y-2 font-b">
