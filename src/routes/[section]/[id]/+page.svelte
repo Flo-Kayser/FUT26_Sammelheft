@@ -6,7 +6,8 @@
 		collectedCardsStore,
 		impossibleCardsStore,
 		savedStores,
-		cardSettingsStore
+		cardSettingsStore,
+		animationSettingsStore
 	} from '$lib/stores/savedStores';
 	import { collectAnimation } from '$lib/helpers/cardAnimationHelper';
 
@@ -20,7 +21,7 @@
 		} else {
 			if ($cardSettingsStore.playAnimation) {
 				collectAnimation(card, e.currentTarget);
-				setTimeout(() => toggleCard(card.resourceId), 2000);
+				setTimeout(() => toggleCard(card.resourceId), ($animationSettingsStore.cardDisplayDuration ?? 1) * 1000 + 2000);
 			} else {
 				toggleCard(card.resourceId);
 			}
@@ -35,6 +36,7 @@
 		on:click={(e) => handleClick(e, card)}
 		on:animationend={() => sessionStore.update((s) => ({ ...s, highlightedCardId: null }))}
 		class:pulse={String(card.resourceId) === String($sessionStore.highlightedCardId)}
+		style={`animation-iteration-count: ${$animationSettingsStore.playerSearchAnimationIterations};`}
 	>
 		<RenderedCard {card} />
 	</button>

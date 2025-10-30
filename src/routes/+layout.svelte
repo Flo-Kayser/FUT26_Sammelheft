@@ -53,7 +53,7 @@
 		}
 	});
 
-	const hideMenuOn = /^\/(Countries|Leagues|Versions|Clubs)\/[^/]+$/;
+	const hideMenuOn = /^\/(?:(Countries|Leagues|Versions|Clubs)\/[^/]+|Batches\/\d+)$/;
 </script>
 
 <main class="relative select-none bg-tri">

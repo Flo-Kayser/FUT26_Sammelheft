@@ -74,7 +74,6 @@
 			       opacity:0;pointer-events:none;"
 		>
 			<button
-				on:click={() => console.log(country.name, country.id)}
 				class="absolute right-0 -top-6 aspect-square rounded-t-sm cursor-pointer bg-accent px-2 text-2xl opacity-0 transition-opacity duration-300 group-hover/listItem:opacity-100"
 			>
 				☆

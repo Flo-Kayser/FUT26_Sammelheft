@@ -31,3 +31,9 @@ export const cardSettingsStore = persistent('card-settings', {
 	showLogosForSBC: true,
 	playAnimation: true,
 });
+
+export const animationSettingsStore = persistent('animation-settings', {
+	playerSearchAnimationIterations: 5,
+	soundVolume: 0.5,
+	cardDisplayDuration: 2,
+});

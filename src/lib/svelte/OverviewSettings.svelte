@@ -3,13 +3,10 @@
 	import { sessionStore } from '$lib/stores/sessionStores';
 	import { writable } from 'svelte/store';
 
-	// internes Toggle für Ein-/Ausklappen
 	let open = false;
 
-	// direkt an cardSizeStore binden
 	$: size = $cardSizeStore;
 
-	// Höhe automatisch 5:4-Verhältnis
 	$: height = Math.round(size * (400 / 320));
 </script>
 
@@ -25,7 +22,7 @@
 	{#if open}
 		<div class="mt-2 w-64 rounded bg-white/90 p-4 text-black shadow-lg backdrop-blur-sm">
 			<label for="cardSizeSlider" class="block text-sm font-bold mb-1">
-				Kartenbreite: {size}px
+				Kartenbreite: {size}
 				<input
 					type="range"
 					min="100"

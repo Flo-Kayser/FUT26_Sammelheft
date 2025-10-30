@@ -15,22 +15,19 @@
 
 	let items = [];
 	let filteredLeagues = [];
-	let totals = {};       // { [leagueId]: { total, collected } }
-	let clubTotals = {};   // { [leagueId]: { [clubId]: { total, collected } } }
+	let totals = {};       
+	let clubTotals = {};   
 	let expandedLeagueId = null;
 	let isCounting = false;
 
 	const BIT = { all: 1, noBase: 2, onlyBest: 4, onlyBestSpecial: 8 };
 
-	/* ---------- erstes Mount ---------- */
 	onMount(() => {
 		handleScroll(items);
 		filterLeagues();
-		// Counts nach dem ersten Paint berechnen
 		requestIdleCallback ? requestIdleCallback(calcTotals) : setTimeout(calcTotals, 100);
 	});
 
-	/* ---------- nur Filtern + Sortieren ---------- */
 	function filterLeagues() {
 		const q = ($sessionStore.searchQuery ?? '').toLowerCase().trim();
 		const all = Object.entries($leaguesIndexStore.leagues ?? {}).map(([id, c]) => ({ ...c, id }));
@@ -38,10 +35,8 @@
 		filteredLeagues.sort((a, b) => a.sortId - b.sortId);
 	}
 
-	// neu filtern wenn sich der Suchbegriff ändert
 	$: filterLeagues();
 
-	/* ---------- Zählungen im Hintergrund ---------- */
 	async function calcTotals() {
 		isCounting = true;
 		const rm = $resourceMapStore?.data ?? {};
@@ -50,13 +45,11 @@
 		const collected = new Set($collectedCardsStore);
 		const impossible = new Set($impossibleCardsStore);
 
-		// --- Ligen zählen ---
 		const tmp = {};
 		for (const l of filteredLeagues) {
 			let total = 0, got = 0;
 			for (const [rid, e] of Object.entries(rm)) {
 				if (!e) continue;
-				// Hero-Club zählt zu Liga 2118
 				if (Number(l.id) === 2118) {
 					if (e.l === 2118 || e.club === 114605) {
 						if (variant !== 'all' && !(e.m & bitMask)) continue;
@@ -74,11 +67,9 @@
 		totals = tmp;
 		isCounting = false;
 
-		// wenn eine Liga aufgeklappt ist, sofort deren Clubs zählen
 		if (expandedLeagueId) await calcClubTotals(expandedLeagueId);
 	}
 
-	/* ---------- Clubs nur bei Bedarf zählen ---------- */
 	async function calcClubTotals(leagueId) {
 		const rm = $resourceMapStore?.data ?? {};
 		const variant = $savedStores.displayedCardsVariant || 'all';
@@ -106,7 +97,6 @@
 
 	function toggleLeague(id) {
 		expandedLeagueId = expandedLeagueId === id ? null : id;
-		// falls geöffnet: Clubs lazy zählen
 		if (expandedLeagueId) calcClubTotals(expandedLeagueId);
 	}
 </script>
@@ -152,7 +142,6 @@
 				</div>
 			</button>
 
-			<!-- Expand-Pfeil -->
 			<button
 				class="absolute top-1/2 -translate-y-1/2 left-2 text-textC transition-transform duration-300 {expandedLeagueId === league.id ? 'rotate-90' : ''}"
 				on:click={() => toggleLeague(league.id)}>➤

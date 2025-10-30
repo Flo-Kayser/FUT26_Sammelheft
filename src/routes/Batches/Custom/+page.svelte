@@ -1,0 +1,1 @@
+<p class="border-t-2 w-full flex text-center py-2">Coming Soon</p>

@@ -6,6 +6,11 @@ export const countriesIndexStore = writable({});
 export const leaguesIndexStore = writable({});
 export const playStylesStore = writable({});
 
+export const totwIndexStore = writable([]);
+export const allBatchesIndexStore = writable([]);
+export const presetsBatchesStore = writable([]);
+export const customBatchesStore = writable([]);
+
 export const assetIdToNameStore = writable({});
 
 export const sessionStore = writable({

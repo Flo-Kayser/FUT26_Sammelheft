@@ -1,12 +1,11 @@
-/* Feste Hintergrund-Schicht hinter allem Content */
 :root::before {
   content: "";
   position: fixed;
-  inset: 0;          /* top:0; right:0; bottom:0; left:0 */
-  z-index: -1;       /* hinter dem Inhalt bleiben */
+  inset: 0;          
+  z-index: -1;      
   pointer-events: none;
 
-  /* Alles was du bisher in .bg-tri hattest, hierher kopieren: */
+ 
   background:
     repeating-linear-gradient(
       0deg,
@@ -47,7 +46,6 @@
   background-position: center;
 }
 
-/* Deine Variablen wie gehabt */
 @theme {
   --color-baseC:  #000000;
   --color-accent: #000000;
@@ -59,13 +57,11 @@
   --line: hsla(55, 70%, 70%, 0.06);
 }
 
-/* Firefox + IE/Edge Legacy */
 @layer base {
   * {
-    -ms-overflow-style: none;  /* IE/Edge */
-    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none; 
+    scrollbar-width: none;     
   }
-  /* Chromium/WebKit */
   *::-webkit-scrollbar {
     display: none;
   }

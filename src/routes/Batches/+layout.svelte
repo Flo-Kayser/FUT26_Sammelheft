@@ -4,10 +4,11 @@
     import { goto } from '$app/navigation';
 
 	const navItems = [
-		{ href: '/Settings/CardSettings', label: 'Karten Einstellungen' },
-		{ href: '/Settings/Backup', label: 'Sicherungskopie' },
-		{ href: '/Settings/Themes', label: 'Farbschema' },
-		{ href: '/Settings/AnimationSettings', label: 'Animationseinstellungen' }
+		{ href: '/Batches/All', label: 'Offizielle Batches' },
+		{ href: '/Batches/TOTW', label: 'Alle TOTWs' },
+		{ href: '/Batches/Custom', label: 'Meine Batches' },
+		{ href: '/Batches/Presets', label: 'Inoffizielle Batches' }
+
 	];
 
     $: activeHref = 
@@ -15,18 +16,17 @@
 
 </script>
 
-<div class="flex lg:px-20 py-10">
+<div class="flex lg:px-20 py-2 lg:py-10">
 	<div
-		class="hidden lg:grid grid-cols-[1fr_3fr] w-full p-2 backdrop:blur-2xl bg-white/30 divide-accent divide-x-2"
+		class="hidden lg:flex flex-col w-full p-2 backdrop:blur-2xl bg-white/30"
 	>
-		<nav class="flex flex-col text-textC px-4">
+		<nav class="flex text-textC px-4 w-full justify-around">
 			{#each navItems as item}
 				<a
 					href={item.href}
-					class="p-2 m-1 hover:bg-accent hover:text-baseC hover:translate-x-3 hover:brightness-125 font-bold transition-all duration-300"
+					class="p-2 m-1 hover:bg-accent hover:text-baseC hover:translate-y-2 hover:brightness-125 font-bold transition-all duration-300 w-1/4 text-center"
 					class:bg-accent={$page.url.pathname === item.href}
-					class:text-baseC={$page.url.pathname === item.href}
-					class:translate-x-3={$page.url.pathname === item.href}
+					class:translate-y-2={$page.url.pathname === item.href}
 				>
 					{item.label}
 				</a>

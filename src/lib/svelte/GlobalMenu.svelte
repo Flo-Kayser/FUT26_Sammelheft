@@ -4,9 +4,11 @@
 	import { goto } from '$app/navigation';
 	import { savedStores, collectedCardsStore, impossibleCardsStore } from '$lib/stores/savedStores';
 
+	let activeHref = '/Versions';
+
 	const navItems = [
 		{ href: 'Versions', label: 'Kartenübersicht' },
-		{ href: 'Batches', label: 'Batches' },
+		{ href: 'Batches/All', label: 'Batches' },
 		{ href: 'allCardsFrom', label: 'Alle Karten von' },
 		{ href: 'FAQ', label: 'FAQ' },
 		{ href: 'Settings/CardSettings', label: 'Einstellungen' }
@@ -82,14 +84,33 @@
 		return allCollected.filter((rid) => matchesVariant(rm[rid], variant)).length;
 	})();
 
-	$: activeHref =
-		'/' +
-		(navItems.find((item) => $page.url.pathname.includes(item.href.split('/')[0]))?.href ||
-			'Versions');
+	$: {
+	const path = $page.url.pathname.toLowerCase();
+
+	if (path.startsWith('/versions') || path.startsWith('/countries') || path.startsWith('/clubs') || path.startsWith('/leagues')) {
+		activeHref = '/Versions'; 
+	}
+	else if (path.startsWith('/batches')) {
+		activeHref = '/Batches/All';
+	}
+	else if (path.startsWith('/allCardsFrom')) {
+		activeHref = '/allCardsFrom';
+	}
+	else if (path.startsWith('/faq')) {
+		activeHref = '/FAQ';
+	}
+	else if (path.startsWith('/settings')) {
+		activeHref = '/Settings/CardSettings';
+	}
+	else {
+		activeHref = '/Versions'; 
+	}
+	}
 
 	$: isShowCounts = ['/Versions', '/Leagues', '/Countries'].some((p) =>
 		$page.url.pathname.startsWith(p)
 	);
+
 </script>
 
 <div class="w-full text-white sticky top-0 z-50 left-0 flex contrast-125 md:px-4 p-2">
@@ -113,7 +134,7 @@
 									? '[clip-path:polygon(2px_0,100%_0%,100%_100%,2px_100%,10px_50%)]'
 									: '[clip-path:polygon(2px_0,calc(100%-8px)_0%,100%_50%,calc(100%-8px)_100%,2px_100%,10px_50%)]'
 						}
-						${activeHref === item.href ? 'bg-accent text-baseC' : 'bg-baseC text-textC'}             
+						${activeHref === '/' + item.href ? 'bg-accent text-baseC' : 'bg-baseC text-textC'}
 					`}
 					>
 						{item.label}
@@ -143,7 +164,9 @@
 			</div>
 		</div>
 
-		<div class="fixed top-20 -left-36 flex divide-x-2 bg-black/80 p-1 py-2 transition-all duration-300 hover:left-0">
+		<div
+			class="fixed top-20 -left-36 flex divide-x-2 bg-black/80 p-1 py-2 transition-all duration-300 hover:left-0"
+		>
 			<div class="flex gap-2 pr-5 p-2 flex-col">
 				{#each socialLinks as link}
 					<a
@@ -155,20 +178,19 @@
 					</a>
 				{/each}
 			</div>
-				<div class="flex gap-2 pr-5 p-2 flex-col pl-4">
-					{#each otherLinks as link}
-						<a
-							href={link.url}
-							target="_blank"
-							class="flex items-center gap-2"
-							rel="noopener noreferrer"
-							>{@html getIcon(link.icon)}</a
-						>
-					{/each}
-				</div>
+			<div class="flex gap-2 pr-5 p-2 flex-col pl-4">
+				{#each otherLinks as link}
+					<a
+						href={link.url}
+						target="_blank"
+						class="flex items-center gap-2"
+						rel="noopener noreferrer">{@html getIcon(link.icon)}</a
+					>
+				{/each}
 			</div>
 		</div>
-
+	</div>
+	<!-- mobile display -->
 	<div class="flex lg:hidden flex-col w-full gap-2 relative">
 		<select
 			class="px-3 py-2 text-textC outline-none bg-baseC border-4 border-accent w-full appearance-none"

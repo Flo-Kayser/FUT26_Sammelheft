@@ -15,20 +15,17 @@
 
 	let items = [];
 	let filteredVersions = [];
-	let totals = {};          // { [versionId]: { total, collected } }
-	let isCounting = false;   // Flag für UI-Ladeanzeige
+	let totals = {};          
+	let isCounting = false;   
 
 	const BIT = { all:1, noBase:2, onlyBest:4, onlyBestSpecial:8 };
 
-	/* --------- Mount ---------- */
 	onMount(() => {
 		handleScroll(items);
 		filterVersions();
-		// Counts erst nach dem ersten Render
 		requestIdleCallback ? requestIdleCallback(calcTotals) : setTimeout(calcTotals, 100);
 	});
 
-	/* --------- Filtern & Sortieren ---------- */
 	function filterVersions() {
 		const q = ($sessionStore.searchQuery ?? '').toLowerCase().trim();
 		const all = Object.entries($versionIndexStore?.versions ?? {}).map(([id, v]) => ({ ...v, id }));
@@ -38,10 +35,8 @@
 		filteredVersions.sort((a,b) => new Date(b.details.createdAt) - new Date(a.details.createdAt));
 	}
 
-	// neu filtern bei Suchfeld-Änderung
 	$: filterVersions();
 
-	/* --------- Zählung im Hintergrund ---------- */
 	async function calcTotals() {
 		isCounting = true;
 		const rm = $resourceMapStore?.data ?? {};

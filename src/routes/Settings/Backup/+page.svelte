@@ -23,9 +23,9 @@
 	</div>
 	<div class="w-full items-center flex flex-col gap-4">
 		<div
-			class="w-full cursor-pointer justify-center md:w-1/2 flex flex-col items-center border-2 bg-white/40 rounded-xs gap-2"
+			class="w-full justify-center md:w-1/2 flex flex-col items-center border-2 bg-white/40 rounded-xs gap-2"
 		>
-			<label for="backupUpload" class="flex justify-center w-full gap-2 p-3 py-2"
+			<label for="backupUpload" class="flex justify-center cursor-pointer w-full gap-2 p-3 py-2"
 				>Sicherungskopie hochladen
 				<div class="min-w-6 -scale-y-100">
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"

@@ -38,7 +38,6 @@
 		}
 	});
 
-
 	$: {
 		const allPlayers = $assetIdToNameStore ?? {};
 		const term = search
@@ -72,14 +71,13 @@
 			.map(([_, value]) => value);
 	}
 
-	$: collectedPlayerCards = playerCards.filter(card =>
+	$: collectedPlayerCards = playerCards.filter((card) =>
 		$collectedCardsStore.includes(card.resourceId)
 	);
 
-	$: impossiblePlayerCards = playerCards.filter(card =>
+	$: impossiblePlayerCards = playerCards.filter((card) =>
 		$impossibleCardsStore.includes(card.resourceId)
 	);
-
 
 	function handleClick(e, card) {
 		if ($savedStores.allCardsDisplaySwitch) return;
@@ -103,7 +101,7 @@
 
 <div class="flex mt-4 md:mt-6 justify-center w-full min-h-[85vh]">
 	<div
-		class="relative w-[90%] h-full min-h-[85vh] bg-white/50 flex flex-col items-center p-2 gap-4"
+		class="relative w-[90%] h-full min-h-[85vh] bg-white/30 flex flex-col items-center p-2 gap-4"
 	>
 		<div class="w-full flex justify-end">
 			<label class="inline-flex cursor-pointer items-center gap-2">
@@ -157,8 +155,9 @@
 		{#if selectedPlayer}
 			<p class="font-black text-white text-xl text-center">
 				{selectedPlayer} hat bereits {playerCards.length} Karten gesammelt.
-				<br>
-				Du hast bereits {collectedPlayerCards.length + impossiblePlayerCards.length}/{playerCards.length}.
+				<br />
+				Du hast bereits {collectedPlayerCards.length +
+					impossiblePlayerCards.length}/{playerCards.length}.
 			</p>
 			<div class="flex flex-wrap justify-center">
 				{#each playerCards as card}
@@ -167,7 +166,13 @@
 						data-card-id={card.resourceId}
 						on:click={(e) => handleClick(e, card)}
 					>
-						<RenderedCard {card} origin={'allCards'} customCardSize={responsiveCardSize} displayMode={$savedStores.allCardsDisplaySwitch} cardName={selectedPlayerCardName}/>
+						<RenderedCard
+							{card}
+							origin={'allCards'}
+							customCardSize={responsiveCardSize}
+							displayMode={$savedStores.allCardsDisplaySwitch}
+							cardName={selectedPlayerCardName}
+						/>
 					</button>
 				{/each}
 			</div>

@@ -94,7 +94,7 @@
 			</div>
 			<!-- Name  -->
 			<div class="top-[64%] left-1/2 -translate-x-1/2 whitespace-nowrap font-b">
-				{origin !== 'default' ? cardName : card.cardName}
+				{origin !== 'allCards' ? card.cardName : cardName}
 			</div>
 			<!-- Attributes -->
 			<div class="flex justify-between w-[70%] top-[74%] left-1/2 -translate-x-1/2">

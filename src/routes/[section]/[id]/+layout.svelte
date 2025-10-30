@@ -5,7 +5,10 @@
 		leaguesIndexStore,
 		countriesIndexStore,
 		resourceMapStore,
-		sessionStore
+		sessionStore,
+		allBatchesIndexStore,
+		totwIndexStore,
+		presetsBatchesStore
 	} from '$lib/stores/sessionStores';
 	import {
 		savedStores,
@@ -24,6 +27,21 @@
 	export let children;
 
 	onMount(async () => {
+		if (section === 'Batches') {
+			if (!$allBatchesIndexStore || $allBatchesIndexStore.length === 0) {
+				const allBatches = await apiClient.fetchData('index-data/batches/index-other-batches.json');
+				allBatchesIndexStore.set(allBatches);
+			}
+			if (!$totwIndexStore || $totwIndexStore.length === 0) {
+				const totwBatches = await apiClient.fetchData('index-data/batches/index-totw-batches.json');
+				totwIndexStore.set(totwBatches);
+			}
+			if ($presetsBatchesStore.length === 0 && findBatchOriginById(id) === null) {
+				goto('/Batches/Presets');
+				return;
+			}
+		}
+
 		cards = await fetchPlayers();
 
 		if (section === 'Leagues' && String(id) === '2118') {
@@ -51,17 +69,50 @@
 		};
 	});
 
-	// ---- URL / Titel ----
+	function findBatchOriginById(batchId) {
+		const batch = $allBatchesIndexStore?.find((b) => String(b.id) === String(batchId));
+		if (batch) return 'allBatches';
+		const totw = $totwIndexStore?.find((t) => String(t.id) === String(batchId));
+		if (totw) return 'TOTW';
+		const preset = $presetsBatchesStore?.find((p) => String(p.id) === String(batchId));
+		if (preset) return 'Presets';
+		return null;
+	}
+
 	$: id = $page.params.id ?? '';
 	$: section = $page.params.section ?? '';
 	$: imageUrl =
-		section === 'Versions'
-			? $versionIndexStore?.versions?.[id]?.details?.url || ''
-			: id.includes('_')
-				? `https://cdn.easysbc.io/fc26/${section.toLowerCase()}/${id.split('_')[1]}.png`
-				: `https://cdn.easysbc.io/fc26/${section.toLowerCase()}/${id}.png`;
+		section === 'Batches'
+			? (() => {
+					const origin = findBatchOriginById(id);
+					if (origin === 'TOTW') return `https://cdn.easysbc.io/fc26/cards/e_3_0.png`;
+					if (origin === 'allBatches') return `https://cdn.easysbc.io/fc26/cards/e_22_0.png`;
+					if (origin === 'Presets') return `https://cdn.easysbc.io/fc26/cards/e_150_0.png`;
+					return `https://cdn.easysbc.io/fc26/cards/e_114_0.png`;
+				})()
+			: section === 'Versions'
+				? $versionIndexStore?.versions?.[id]?.details?.url || ''
+				: id.includes('_')
+					? `https://cdn.easysbc.io/fc26/${section.toLowerCase()}/${id.split('_')[1]}.png`
+					: `https://cdn.easysbc.io/fc26/${section.toLowerCase()}/${id}.png`;
 
 	$: title = (() => {
+		if (section === 'Batches') {
+			const origin = findBatchOriginById(id);
+			if (origin === 'allBatches') {
+				const batch = $allBatchesIndexStore?.find((b) => String(b.id) === String(id));
+				if (batch) return batch.name;
+			}
+			if (origin === 'TOTW') {
+				const totw = $totwIndexStore?.find((t) => String(t.id) === String(id));
+				if (totw) return totw.name;
+			}
+			if (origin === 'Presets') {
+				const preset = $presetsBatchesStore?.find((p) => String(p.id) === String(id));
+				if (preset) return preset.name;
+			}
+			return 'Batch';
+		}
 		if (section === 'Versions') return $versionIndexStore?.versions?.[id]?.details?.name ?? '';
 		if (section === 'Leagues') return $leaguesIndexStore?.leagues?.[id]?.name ?? '';
 		if (section === 'Countries') return $countriesIndexStore?.countries?.[id]?.name ?? '';
@@ -74,7 +125,6 @@
 		return '';
 	})();
 
-	// ---- Counts ----
 	const BIT = { all: 1, noBase: 2, onlyBest: 4, onlyBestSpecial: 8 };
 
 	function matchingIds(rm, section, id, matchesVariant) {
@@ -103,37 +153,57 @@
 		const rm = $resourceMapStore?.data ?? {};
 		if (!section || !id) return 0;
 
-		if (section === 'Versions') {
+		if (section === 'Batches') {
+			return Object.values(cards).length;
+		} else if (section === 'Versions') {
 			return matchingIds(rm, section, id, () => true).length;
+		} else {
+			const variant = $savedStores.displayedCardsVariant || 'all';
+			const bitMask = BIT[variant] ?? BIT.all;
+			const matchesVariant = (e) => variant === 'all' || e.m & bitMask;
+			return matchingIds(rm, section, id, matchesVariant).length;
 		}
-
-		const variant = $savedStores.displayedCardsVariant || 'all';
-		const bitMask = BIT[variant] ?? BIT.all;
-		const matchesVariant = (e) => variant === 'all' || e.m & bitMask;
-		return matchingIds(rm, section, id, matchesVariant).length;
 	})();
 
 	$: collectedCount = (() => {
 		const rm = $resourceMapStore?.data ?? {};
 		if (!section || !id) return 0;
 
-		const matchesVariant =
-			section === 'Versions'
-				? () => true
-				: (e) => {
-						const variant = $savedStores.displayedCardsVariant || 'all';
-						if (variant === 'all') return true;
-						const bitMask = BIT[variant] ?? BIT.all;
-						return (e.m & bitMask) !== 0;
-					};
+		if (section === 'Batches') {
+			const collected = new Set($collectedCardsStore);
+			const impossible = new Set($impossibleCardsStore);
+			return Object.values(cards).filter(
+				(card) => collected.has(Number(card.resourceId)) || impossible.has(Number(card.resourceId))
+			).length;
+		} else {
+			const matchesVariant =
+				section === 'Versions'
+					? () => true
+					: (e) => {
+							const variant = $savedStores.displayedCardsVariant || 'all';
+							if (variant === 'all') return true;
+							const bitMask = BIT[variant] ?? BIT.all;
+							return (e.m & bitMask) !== 0;
+						};
 
-		const ids = matchingIds(rm, section, id, matchesVariant);
-		const collected = new Set($collectedCardsStore);
-		const impossible = new Set($impossibleCardsStore);
-		return ids.filter((rid) => collected.has(Number(rid)) || impossible.has(Number(rid))).length;
+			const ids = matchingIds(rm, section, id, matchesVariant);
+			const collected = new Set($collectedCardsStore);
+			const impossible = new Set($impossibleCardsStore);
+			return ids.filter((rid) => collected.has(Number(rid)) || impossible.has(Number(rid))).length;
+		}
 	})();
 
 	async function fetchPlayers() {
+		if (section === 'Batches') {
+			const origin = findBatchOriginById(id);
+			if (origin !== 'Presets') {
+				return apiClient.fetchData(`batches/${id}.json`);
+			} else {
+				const preset = $presetsBatchesStore?.find((p) => String(p.id) === String(id));
+
+				return preset?.allIds;
+			}
+		}
 		if (section === 'Versions') return apiClient.fetchData(`versions/${id}.json`);
 		if (section === 'Clubs')
 			return id.includes('_')
@@ -153,8 +223,6 @@
 			);
 	}
 
-	// ---- Grid / Pagination ----
-
 	$: cardWidth = $cardSizeStore;
 	$: cardHeight = Math.round($cardSizeStore * (400 / 320));
 	let gap = 8;
@@ -169,21 +237,21 @@
 	let pagesToShow = [];
 
 	$: sortedCards = Object.values(cards)
-		.filter(card => {
-		const id = Number(card.resourceId);
-		const collected = new Set($collectedCardsStore);
-		const impossible = new Set($impossibleCardsStore);
+		.filter((card) => {
+			const id = Number(card.resourceId);
+			const collected = new Set($collectedCardsStore);
+			const impossible = new Set($impossibleCardsStore);
 
-		const showCollected = $sessionStore.showCollectedCards;
-		const showImpossible = $sessionStore.showImpossibleCards;
-		const showMissing = $sessionStore.showMissingCards;
+			const showCollected = $sessionStore.showCollectedCards;
+			const showImpossible = $sessionStore.showImpossibleCards;
+			const showMissing = $sessionStore.showMissingCards;
 
-		if (!showCollected && !showImpossible && !showMissing) return true;
-		if (showCollected && collected.has(id)) return true;
-		if (showImpossible && impossible.has(id)) return true;
-		if (showMissing && !collected.has(id) && !impossible.has(id)) return true;
-		return false;
-	})
+			if (!showCollected && !showImpossible && !showMissing) return true;
+			if (showCollected && collected.has(id)) return true;
+			if (showImpossible && impossible.has(id)) return true;
+			if (showMissing && !collected.has(id) && !impossible.has(id)) return true;
+			return false;
+		})
 		.sort((a, b) =>
 			a.rating !== b.rating
 				? b.rating - a.rating
@@ -222,10 +290,10 @@
 		pagesToShow = Array.from(pages).sort((a, b) => a - b);
 	}
 
-	let scrollCooldown = false;
+	let scrollCoolDown = false;
 
 	function onWheel(e) {
-		if (totalPages <= 1 || scrollCooldown) return;
+		if (totalPages <= 1 || scrollCoolDown) return;
 
 		if (e.deltaY > 0 && currentPage < totalPages) {
 			currentPage += 1;
@@ -235,11 +303,10 @@
 			updatePagesToShow();
 		}
 
-		scrollCooldown = true;
-		setTimeout(() => (scrollCooldown = false), 200);
+		scrollCoolDown = true;
+		setTimeout(() => (scrollCoolDown = false), 200);
 	}
 
-	// ---- Swipe Support ----
 	let touchStartX = 0;
 
 	function handleTouchStart(e) {
@@ -343,9 +410,7 @@
 			<OverviewSettings />
 
 			<!-- Pagination -->
-			<section
-				class="fixed bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 select-none text-white"
-			>
+			<section class="fixed bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 select-none text-white">
 				{#if totalPages > 1}
 					<div class="flex items-center justify-center gap-2">
 						<button

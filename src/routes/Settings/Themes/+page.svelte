@@ -9,7 +9,6 @@
 		{ name: '--color-textC', label: 'Textfarbe' }
 	];
 
-	// Themes mit Farben + Beschreibung
 	const themes = {
 		Classic: {
 			colors: {
