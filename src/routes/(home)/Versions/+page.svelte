@@ -15,8 +15,8 @@
 
 	let items = [];
 	let filteredVersions = [];
-	let totals = {};          
-	let isCounting = false;   
+	let totals = {};
+	let isCounting = false;
 
 	const BIT = { all:1, noBase:2, onlyBest:4, onlyBestSpecial:8 };
 
@@ -35,7 +35,7 @@
 		filteredVersions.sort((a,b) => new Date(b.details.createdAt) - new Date(a.details.createdAt));
 	}
 
-	$: filterVersions();
+	$: if($versionIndexStore) filterVersions();
 
 	async function calcTotals() {
 		isCounting = true;
@@ -66,7 +66,7 @@
 			bind:this={items[i]}
 			class="relative flex h-16 w-full transform border-2 border-accent transition-all duration-300 group/listItem hover:-translate-y-1 hover:brightness-110"
 			style="background:linear-gradient(110deg,var(--color-baseC) 30%,var(--color-accent) 70%);
-			       opacity:0;pointer-events:none;"
+			       opacity:1;pointer-events:none;"
 		>
 			<button
 				on:click={() => navToCardsSite('Versions', version.id)}
