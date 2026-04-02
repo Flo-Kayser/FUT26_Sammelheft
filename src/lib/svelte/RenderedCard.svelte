@@ -64,7 +64,7 @@
 		{#if isMissed}
 			<div class="z-50 grayscale-0 absolute top-0 left-0 brightness-90 -rotate-10"
 			style="width:{cardWidth * 0.6}px;">
-				<img src="/src/lib/SVG/missed.svg" alt="Missed" />
+				<img src="/SVG/missed.svg" alt="Missed" />
 			</div>
 		{/if}
 
