@@ -5,6 +5,7 @@
 	import {
 		collectedCardsStore,
 		impossibleCardsStore,
+		missedCardsStore,
 		savedStores,
 		cardSettingsStore,
 		animationSettingsStore
@@ -15,13 +16,21 @@
 		if (
 			$collectedCardsStore.includes(card.resourceId) ||
 			$impossibleCardsStore.includes(card.resourceId) ||
-			$savedStores.impossibleSwitch
+			$missedCardsStore.includes(card.resourceId) ||
+			$savedStores.impossibleSwitch ||
+			$savedStores.missedSwitch
 		) {
 			toggleCard(card.resourceId);
 		} else {
 			if ($cardSettingsStore.playAnimation) {
-				collectAnimation(card, e.currentTarget);
-				setTimeout(() => toggleCard(card.resourceId), ($animationSettingsStore.cardDisplayDuration ?? 1) * 1000 + 2000);
+				if (!savedStores.missedSwitch) {
+					collectAnimation(card, e.currentTarget);
+				} else {
+				}
+				setTimeout(
+					() => toggleCard(card.resourceId),
+					($animationSettingsStore.cardDisplayDuration ?? 1) * 1000 + 2000
+				);
 			} else {
 				toggleCard(card.resourceId);
 			}

@@ -8,6 +8,7 @@
 		cardSizeStore,
 		collectedCardsStore,
 		impossibleCardsStore,
+		missedCardsStore,
 		cardSettingsStore
 	} from '$lib/stores/savedStores';
 	import { versionIndexStore } from '$lib/stores/sessionStores';
@@ -53,12 +54,20 @@
 
 	$: isCollected = $collectedCardsStore.includes(card.resourceId);
 	$: isImpossible = $impossibleCardsStore.includes(card.resourceId);
-	$: shouldGray = (!isCollected || isImpossible) && displayMode === false ;
+	$: isMissed = $missedCardsStore.includes(card.resourceId);
+	$: shouldGray = (!isCollected || isImpossible || isMissed) && displayMode === false ;
 
 </script>
 
 {#if card}
-	<div class="card" style="width:{cardWidth}px; height:{cardHeight}px;">
+	<div class="card relative" style="width:{cardWidth}px; height:{cardHeight}px;">
+		{#if isMissed}
+			<div class="z-50 grayscale-0 absolute top-0 left-0 brightness-90 -rotate-10"
+			style="width:{cardWidth * 0.6}px;">
+				<img src="/src/lib/SVG/missed.svg" alt="Missed" />
+			</div>
+		{/if}
+
 		<div
 			class="flex items-center justify-center relative *:absolute contrast-100"
 			class:contrast-50={isImpossible}
@@ -75,6 +84,8 @@
 					Impossible
 				</div>
 			{/if}
+
+
 			<!-- Card Background -->
 			<img src={version?.details?.url} class="w-full" alt="" />
 			<!-- Player Image -->

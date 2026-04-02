@@ -89,7 +89,7 @@ export function collectAnimation(card, btnEl) {
 		)
 		.finished
 		.then(() => {
-			
+
 			const audio = new Audio(
 				'https://cdn.jsdelivr.net/gh/Flo-Kayser/db_futCards/staticData/collect.mp3'
 			);

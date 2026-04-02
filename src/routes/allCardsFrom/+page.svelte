@@ -5,7 +5,9 @@
 		savedStores,
 		collectedCardsStore,
 		impossibleCardsStore,
-		cardSettingsStore
+		missedCardsStore,
+		cardSettingsStore,
+		animationSettingsStore
 	} from '$lib/stores/savedStores';
 	import { assetIdToNameStore } from '$lib/stores/sessionStores';
 	import RenderedCard from '$lib/svelte/RenderedCard.svelte';
@@ -80,18 +82,21 @@
 	);
 
 	function handleClick(e, card) {
-		if ($savedStores.allCardsDisplaySwitch) return;
-
 		if (
 			$collectedCardsStore.includes(card.resourceId) ||
 			$impossibleCardsStore.includes(card.resourceId) ||
-			$savedStores.impossibleSwitch
+			$missedCardsStore.includes(card.resourceId) ||
+			$savedStores.impossibleSwitch ||
+			$savedStores.missedSwitch
 		) {
 			toggleCard(card.resourceId);
 		} else {
 			if ($cardSettingsStore.playAnimation) {
 				collectAnimation(card, e.currentTarget);
-				setTimeout(() => toggleCard(card.resourceId), 2000);
+				setTimeout(
+					() => toggleCard(card.resourceId),
+					($animationSettingsStore.cardDisplayDuration ?? 1) * 1000 + 2000
+				);
 			} else {
 				toggleCard(card.resourceId);
 			}
@@ -164,7 +169,11 @@
 					<button
 						style="cursor: {!$savedStores.allCardsDisplaySwitch ? 'pointer' : 'default'}"
 						data-card-id={card.resourceId}
-						on:click={(e) => handleClick(e, card)}
+						on:click={(e) => {
+							if (!$savedStores.allCardsDisplaySwitch) {
+								handleClick(e, card);
+							}
+						}}
 					>
 						<RenderedCard
 							{card}

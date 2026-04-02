@@ -1,7 +1,7 @@
 <script>
 	import { cardSizeStore, savedStores } from '$lib/stores/savedStores';
 	import { sessionStore } from '$lib/stores/sessionStores';
-	import { writable } from 'svelte/store';
+	import { toggleSwitch } from '$lib/helpers/switch.js';
 
 	let open = false;
 
@@ -34,11 +34,26 @@
 				/>
 			</label>
 			<label for="impSwitch" class="text-sm flex justify-between pr-2 mb-2">
-				Markiere Karten als Unmöglich
+				<span>
+					Markiere Karten als <strong>Unmöglich</strong>
+				</span>
 				<input
 					type="checkbox"
 					id="impSwitch"
 					bind:checked={$savedStores.impossibleSwitch}
+					on:change={()=>toggleSwitch('impossibleSwitch')}
+					class="ml-2"
+				/>
+			</label>
+			<label for="missSwitch" class="text-sm flex justify-between pr-2 mb-2">
+				<span>
+					Markiere Karten als <strong>Verpasst</strong>
+				</span>
+				<input
+					type="checkbox"
+					id="missSwitch"
+					bind:checked={$savedStores.missedSwitch}
+					on:change={()=>toggleSwitch('missedSwitch')}
 					class="ml-2"
 				/>
 			</label>

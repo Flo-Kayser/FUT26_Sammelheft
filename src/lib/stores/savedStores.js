@@ -11,9 +11,10 @@ function persistent(key, initial) {
 	return store;
 }
 
-export const savedStores        = persistent('savedStores', { impossibleSwitch: false, displayedCardsVariant: 'all', allCardsDisplaySwitch: true });
+export const savedStores        = persistent('savedStores', { impossibleSwitch: false, displayedCardsVariant: 'all', allCardsDisplaySwitch: true, missedSwitch:false });
 export const collectedCardsStore = persistent('collectedCards', []);
 export const impossibleCardsStore = persistent('impossibleCards', []);
+export const missedCardsStore = persistent('missedCards', []);
 export const cardSizeStore      = persistent('cardSize', 180); 
 export const themeStore = persistent('theme-settings', {
 	selectedTheme: 'Green',
