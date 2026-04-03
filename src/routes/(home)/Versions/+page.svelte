@@ -8,7 +8,8 @@
 	import {
 		savedStores,
 		collectedCardsStore,
-		impossibleCardsStore
+		impossibleCardsStore,
+		missedCardsStore
 	} from '$lib/stores/savedStores';
 	import { handleScroll } from '$lib/helpers/listScrollControls';
 	import { navToCardsSite } from '$lib/helpers/navigationHelper';
@@ -45,6 +46,7 @@
 		const rm = $resourceMapStore?.data ?? {};
 		const collected  = new Set($collectedCardsStore);
 		const impossible = new Set($impossibleCardsStore);
+		const missed = new Set($missedCardsStore);
 
 		const tmp = {};
 		for (const v of filteredVersions) {
@@ -52,7 +54,7 @@
 			for (const [rid, e] of Object.entries(rm)) {
 				if (!e || String(e.v) !== String(v.id)) continue;
 				total++;
-				if (collected.has(+rid) || impossible.has(+rid)) got++;
+				if (collected.has(+rid) || impossible.has(+rid) || missed.has(+rid)) got++;
 			}
 			tmp[v.id] = { total, collected: got };
 		}

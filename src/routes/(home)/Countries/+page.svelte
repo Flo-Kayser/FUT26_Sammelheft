@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { countriesIndexStore, resourceMapStore, sessionStore } from '$lib/stores/sessionStores';
-	import { savedStores, collectedCardsStore, impossibleCardsStore } from '$lib/stores/savedStores';
+	import { savedStores, collectedCardsStore, impossibleCardsStore, missedCardsStore } from '$lib/stores/savedStores';
 	import { handleScroll } from '$lib/helpers/listScrollControls';
 	import { goto } from '$app/navigation';
 	import { navToCardsSite } from '$lib/helpers/navigationHelper';
@@ -41,6 +41,7 @@
 		const bitMask = BIT[variant] ?? 0;
 		const collected = new Set($collectedCardsStore);
 		const impossible = new Set($impossibleCardsStore);
+		const missed = new Set($missedCardsStore);
 
 		const tmp = {};
 		for (const c of filteredCountries) {
@@ -51,7 +52,7 @@
 
 			const collectedIds = allCards
 				.map(([rid]) => rid)
-				.filter((rid) => collected.has(Number(rid)) || impossible.has(Number(rid)));
+				.filter((rid) => collected.has(Number(rid)) || impossible.has(Number(rid)) || missed.has(Number(+rid)));
 
 			tmp[c.id] = {
 				total: allCards.length,

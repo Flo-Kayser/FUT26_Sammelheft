@@ -14,6 +14,7 @@
 		savedStores,
 		collectedCardsStore,
 		impossibleCardsStore,
+		missedCardsStore,
 		cardSizeStore
 	} from '$lib/stores/savedStores';
 	import { onMount } from 'svelte';
@@ -172,8 +173,10 @@
 		if (section === 'Batches') {
 			const collected = new Set($collectedCardsStore);
 			const impossible = new Set($impossibleCardsStore);
+			const missed = new Set($missedCardsStore);
+
 			return Object.values(cards).filter(
-				(card) => collected.has(Number(card.resourceId)) || impossible.has(Number(card.resourceId))
+				(card) => collected.has(Number(card.resourceId)) || impossible.has(Number(card.resourceId) || missed.has(Number(card.resourceId)))
 			).length;
 		} else {
 			const matchesVariant =
@@ -189,7 +192,9 @@
 			const ids = matchingIds(rm, section, id, matchesVariant);
 			const collected = new Set($collectedCardsStore);
 			const impossible = new Set($impossibleCardsStore);
-			return ids.filter((rid) => collected.has(Number(rid)) || impossible.has(Number(rid))).length;
+			const missed = new Set($missedCardsStore);
+
+			return ids.filter((rid) => collected.has(Number(rid)) || impossible.has(Number(rid)) || missed.has(Number(+rid))).length;
 		}
 	})();
 
@@ -241,6 +246,8 @@
 			const id = Number(card.resourceId);
 			const collected = new Set($collectedCardsStore);
 			const impossible = new Set($impossibleCardsStore);
+			const missed = new Set($missedCardsStore);
+
 
 			const showCollected = $sessionStore.showCollectedCards;
 			const showImpossible = $sessionStore.showImpossibleCards;
@@ -248,7 +255,7 @@
 
 			if (!showCollected && !showImpossible && !showMissing) return true;
 			if (showCollected && collected.has(id)) return true;
-			if (showImpossible && impossible.has(id)) return true;
+			if (showImpossible && impossible.has(id) || showImpossible && missed.has(id)) return true;
 			if (showMissing && !collected.has(id) && !impossible.has(id)) return true;
 			return false;
 		})

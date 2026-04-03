@@ -8,7 +8,8 @@
 	import {
 		savedStores,
 		collectedCardsStore,
-		impossibleCardsStore
+		impossibleCardsStore,
+		missedCardsStore
 	} from '$lib/stores/savedStores';
 	import { handleScroll } from '$lib/helpers/listScrollControls';
 	import { navToCardsSite } from '$lib/helpers/navigationHelper';
@@ -47,6 +48,7 @@
 		const bitMask = BIT[variant] ?? 0;
 		const collected = new Set($collectedCardsStore);
 		const impossible = new Set($impossibleCardsStore);
+		const missed = new Set($missedCardsStore);
 
 		const tmp = {};
 		for (const l of filteredLeagues) {
@@ -57,12 +59,12 @@
 					if (e.l === 2118 || e.club === 114605) {
 						if (variant !== 'all' && !(e.m & bitMask)) continue;
 						total++;
-						if (collected.has(+rid) || impossible.has(+rid)) got++;
+						if (collected.has(+rid) || impossible.has(+rid) || missed.has(+rid)) got++;
 					}
 				} else if (e.l === Number(l.id)) {
 					if (variant !== 'all' && !(e.m & bitMask)) continue;
 					total++;
-					if (collected.has(+rid) || impossible.has(+rid)) got++;
+					if (collected.has(+rid) || impossible.has(+rid) || missed.has(+rid)) got++;
 				}
 			}
 			tmp[l.id] = { total, collected: got };
@@ -79,6 +81,8 @@
 		const bitMask = BIT[variant] ?? 0;
 		const collected = new Set($collectedCardsStore);
 		const impossible = new Set($impossibleCardsStore);
+		const missed = new Set($missedCardsStore);
+
 		const league = $leaguesIndexStore.leagues[leagueId];
 		const cTmp = {};
 
@@ -90,7 +94,7 @@
 				if (e.club === clubId && (leagueId == 2118 || e.l === Number(leagueId))) {
 					if (variant !== 'all' && !(e.m & bitMask)) continue;
 					total++;
-					if (collected.has(+rid) || impossible.has(+rid)) got++;
+					if (collected.has(+rid) || impossible.has(+rid) || missed.has(+rid)) got++;
 				}
 			}
 			cTmp[c.id] = { total, collected: got };
