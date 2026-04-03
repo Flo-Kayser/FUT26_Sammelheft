@@ -25,6 +25,7 @@
 		handleScroll(items);
 		filterVersions();
 		requestIdleCallback ? requestIdleCallback(calcTotals) : setTimeout(calcTotals, 100);
+		calcTotals();
 	});
 
 	function filterVersions() {
