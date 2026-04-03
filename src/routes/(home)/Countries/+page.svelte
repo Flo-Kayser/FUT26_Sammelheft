@@ -70,8 +70,7 @@
 		<div
 			bind:this={items[i]}
 			class="relative flex h-16 w-full transform border-2 border-accent transition-all duration-300 group/listItem hover:-translate-y-1 hover:brightness-110"
-			style="background:linear-gradient(110deg,var(--color-baseC) 30%,var(--color-accent) 70%);
-			       opacity:1;pointer-events:none;"
+			style="background:linear-gradient(110deg,var(--color-baseC) 30%,var(--color-accent) 70%);"
 		>
 			<button
 				class="absolute right-0 -top-6 aspect-square rounded-t-sm cursor-pointer bg-accent px-2 text-2xl opacity-0 transition-opacity duration-300 group-hover/listItem:opacity-100"

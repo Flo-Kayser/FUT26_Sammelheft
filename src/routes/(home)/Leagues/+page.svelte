@@ -35,7 +35,10 @@
 		filteredLeagues.sort((a, b) => a.sortId - b.sortId);
 	}
 
-	$: if($leaguesIndexStore) filterLeagues();
+	$: if($leaguesIndexStore) {
+		filterLeagues();
+		calcTotals()
+	}
 
 	async function calcTotals() {
 		isCounting = true;
@@ -108,7 +111,7 @@
 		<div
 			bind:this={items[i]}
 			class="border-2 pl-8 border-accent group/listItem relative flex flex-col transition-all duration-300 hover:-translate-y-1 hover:brightness-110 text-sm md:text-base"
-			style="background:linear-gradient(110deg,var(--color-baseC) 30%,var(--color-accent) 70%); opacity:1;pointer-events:none;"
+			style="background:linear-gradient(110deg,var(--color-baseC) 30%,var(--color-accent) 70%);"
 		>
 			<!-- Liga-Kopf -->
 			<button
