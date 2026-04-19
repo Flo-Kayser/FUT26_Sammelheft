@@ -7,6 +7,7 @@ export const leaguesIndexStore = writable({});
 export const playStylesStore = writable({});
 
 export const totwIndexStore = writable([]);
+export const totsIndexStore = writable([]);
 export const allBatchesIndexStore = writable([]);
 export const presetsBatchesStore = writable([]);
 export const customBatchesStore = writable([]);
