@@ -8,7 +8,7 @@
 
 	const navItems = [
 		{ href: 'Versions', label: 'Kartenübersicht' },
-		{ href: 'Batches/All', label: 'Batches' },
+		{ href: 'Batches/TOTS', label: 'Batches' },
 		{ href: 'allCardsFrom', label: 'Alle Karten von' },
 		{ href: 'FAQ', label: 'FAQ' },
 		{ href: 'Settings/CardSettings', label: 'Einstellungen' }
@@ -91,7 +91,7 @@
 		activeHref = '/Versions'; 
 	}
 	else if (path.startsWith('/batches')) {
-		activeHref = '/Batches/All';
+		activeHref = '/Batches/TOTS';
 	}
 	else if (path.startsWith('/allCardsFrom')) {
 		activeHref = '/allCardsFrom';
@@ -103,7 +103,7 @@
 		activeHref = '/Settings/CardSettings';
 	}
 	else {
-		activeHref = '/Versions'; 
+		activeHref = '/allCardsFrom';
 	}
 	}
 
