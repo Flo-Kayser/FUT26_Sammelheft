@@ -1,15 +1,17 @@
 <script>
 	export let card,
 		origin = 'default',
-		displayMode= false,
+		displayMode = false,
 		customCardSize,
-		cardName
+		cardName;
 	import {
 		cardSizeStore,
 		collectedCardsStore,
 		impossibleCardsStore,
 		missedCardsStore,
-		cardSettingsStore
+		cardSettingsStore,
+		totsRedStore,
+		totsBothStore
 	} from '$lib/stores/savedStores';
 	import { versionIndexStore } from '$lib/stores/sessionStores';
 	import PlayStylesHelper from './Helper/PlayStylesHelper.svelte';
@@ -31,7 +33,9 @@
 		notTW: ['PAC', 'SHO', 'PAS', 'DRI', 'DEF', 'PHY']
 	};
 	$: labels = attributeLabels[isGoalkeeper ? 'TW' : 'notTW'];
-	$: version = $versionIndexStore?.versions?.[card?.versionId] ?? {};
+	$: version = $totsRedStore.includes(card.resourceId)
+		? $versionIndexStore?.versions?.[127]
+		: ($versionIndexStore?.versions?.[card?.versionId] ?? {});
 
 	let dynamicPos = card?.hasDynamicImage;
 	function checkRealSize(e) {
@@ -48,22 +52,23 @@
 		e.currentTarget.src = `https://cdn.easysbc.io/fc26/players/${card.assetId}.png`;
 	}
 
-	$: primaryColor = version.details?.primaryColor;
-	$: secondaryColor = version.details?.secondaryColor;
-	$: tertiaryColor = version.details?.tertiaryColor;
+	$: primaryColor = version?.details?.primaryColor;
+	$: secondaryColor = version?.details?.secondaryColor;
+	$: tertiaryColor = version?.details?.tertiaryColor;
 
 	$: isCollected = $collectedCardsStore.includes(card.resourceId);
 	$: isImpossible = $impossibleCardsStore.includes(card.resourceId);
 	$: isMissed = $missedCardsStore.includes(card.resourceId);
-	$: shouldGray = (!isCollected || isImpossible || isMissed) && displayMode === false ;
-
+	$: shouldGray = (!isCollected || isImpossible || isMissed) && displayMode === false;
 </script>
 
 {#if card}
 	<div class="card relative" style="width:{cardWidth}px; height:{cardHeight}px;">
 		{#if isMissed}
-			<div class="z-50 grayscale-0 absolute top-0 left-0 brightness-90 -rotate-10"
-			style="width:{cardWidth * 0.6}px;">
+			<div
+				class="z-50 grayscale-0 absolute top-0 left-0 brightness-90 -rotate-10"
+				style="width:{cardWidth * 0.6}px;"
+			>
 				<img src="/SVG/missed.svg" alt="Missed" />
 			</div>
 		{/if}
@@ -85,9 +90,32 @@
 				</div>
 			{/if}
 
-
 			<!-- Card Background -->
-			<img src={version?.details?.url} class="w-full" alt="" />
+			{#if $totsBothStore.includes(card.resourceId)}
+				<img
+					src={$versionIndexStore?.versions?.[127]?.details?.url}
+					alt="TOTS Champions"
+					class="pointer-events-none absolute w-full"
+				/>
+				<img
+					src={version?.details?.url}
+					alt="TOTS"
+					class="mask-diagonal pointer-events-none w-full"
+				/>
+
+			<style>
+          .mask-diagonal {
+              -webkit-mask-image: linear-gradient(135deg, transparent 50%, black 50%);
+              mask-image: linear-gradient(135deg, transparent 50%, black 50%);
+              -webkit-mask-size: 100% 100%;
+              mask-size: 100% 100%;
+              -webkit-mask-repeat: no-repeat;
+              mask-repeat: no-repeat;
+          }
+			</style>
+			{:else}
+				<img src={version?.details?.url} class="w-full" alt="" />
+			{/if}
 			<!-- Player Image -->
 			<img
 				src={`https://cdn.easysbc.io/fc26/players/${card.resourceId}.png`}
@@ -96,10 +124,10 @@
 				on:error={(e) => {
 					handleError(e);
 				}}
-				class="{dynamicPos ? '-top-2.5 left-0' : 'top-2.5 left-5 scale-70'}"
+				class={dynamicPos ? '-top-2.5 left-0' : 'top-2.5 left-5 scale-70'}
 			/>
 			<!-- Rating and Pos -->
-			<div class="top-[18%] left-[15%] flex flex-col -space-y-2 font-b">
+			<div class="top-[18%] left-[15%] flex flex-col items-center -space-y-2 font-b">
 				<span class="text-[20px]">{card.rating}</span>
 				<span class=" text-[10px]">{card.preferredPosition}</span>
 			</div>
@@ -165,12 +193,21 @@
 					}`}
 				>
 					{#each card?.playStylesPlus as playStylePlusId}
+						{#if $totsBothStore.includes(card.resourceId)}
+							<PlayStylesHelper
+								playStyleId={playStylePlusId}
+								lineColor={$versionIndexStore?.versions?.[127]?.details?.secondaryColor}
+								bgColor={$versionIndexStore?.versions?.[127]?.details?.primaryColor}
+								class="size-5"
+							/>
+							{:else }
 						<PlayStylesHelper
 							playStyleId={playStylePlusId}
 							lineColor={secondaryColor}
 							bgColor={primaryColor}
 							class="size-5"
 						/>
+							{/if}
 					{/each}
 				</div>
 			{/if}

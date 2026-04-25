@@ -15,6 +15,8 @@ export const savedStores        = persistent('savedStores', { impossibleSwitch: 
 export const collectedCardsStore = persistent('collectedCards', []);
 export const impossibleCardsStore = persistent('impossibleCards', []);
 export const missedCardsStore = persistent('missedCards', []);
+export const totsRedStore					 = persistent('totsRedCards', []);
+export const totsBothStore				 = persistent('totsBothCards', []);
 export const cardSizeStore      = persistent('cardSize', 180); 
 export const themeStore = persistent('theme-settings', {
 	selectedTheme: 'Green',
@@ -37,4 +39,8 @@ export const animationSettingsStore = persistent('animation-settings', {
 	playerSearchAnimationIterations: 5,
 	soundVolume: 0.5,
 	cardDisplayDuration: 2,
+});
+
+export const totsCardsSettingsStore = persistent('tots-cards-settings', {
+	useRedCards: false,
 });

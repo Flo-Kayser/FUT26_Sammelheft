@@ -7,7 +7,8 @@
 		{ href: '/Settings/CardSettings', label: 'Karten Einstellungen' },
 		{ href: '/Settings/Backup', label: 'Sicherungskopie' },
 		{ href: '/Settings/Themes', label: 'Farbschema' },
-		{ href: '/Settings/AnimationSettings', label: 'Animationseinstellungen' }
+		{ href: '/Settings/AnimationSettings', label: 'Animationseinstellungen' },
+		{ href: '/Settings/TotsSettings', label: 'Tots Karten Einstellungen' }
 	];
 
     $: activeHref = 

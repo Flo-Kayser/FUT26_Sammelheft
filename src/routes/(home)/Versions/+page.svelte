@@ -68,6 +68,7 @@
 
 <section class="grid grid-cols-1 gap-4 px-4 py-4 lg:grid-cols-2 xl:grid-cols-3">
 	{#each filteredVersions as version, i}
+		{#if version.id !== "127"}
 		<div
 			bind:this={items[i]}
 			class="relative flex h-16 w-full transform border-2 border-accent transition-all duration-300 group/listItem hover:-translate-y-1 hover:brightness-110"
@@ -91,5 +92,6 @@
 				</div>
 			</button>
 		</div>
+			{/if}
 	{/each}
 </section>
