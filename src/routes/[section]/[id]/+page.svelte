@@ -84,7 +84,7 @@
 </script>
 
 {#each Object.values($sessionStore.pagedCards) as card}
-	{#if $totsCardsSettingsStore.useRedCards && ['11', '65', '120'].includes(card.versionId)}
+	{#if $totsCardsSettingsStore.useRedCards && ['11', '65', '120',11,65,120].includes(card.versionId)}
 		{#if isTotsCardCollectable(card)}
 			<div
 				class="relative"

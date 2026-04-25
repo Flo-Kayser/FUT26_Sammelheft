@@ -8,6 +8,7 @@
 		sessionStore,
 		allBatchesIndexStore,
 		totwIndexStore,
+		totsIndexStore,
 		presetsBatchesStore
 	} from '$lib/stores/sessionStores';
 	import {
@@ -36,6 +37,10 @@
 			if (!$totwIndexStore || $totwIndexStore.length === 0) {
 				const totwBatches = await apiClient.fetchData('index-data/batches/index-totw-batches.json');
 				totwIndexStore.set(totwBatches);
+			}
+			if (!$totsIndexStore || $totsIndexStore.length === 0) {
+				const totsBatches = await apiClient.fetchData('index-data/batches/index-tots-batches.json');
+				totsIndexStore.set(totsBatches);
 			}
 			if ($presetsBatchesStore.length === 0 && findBatchOriginById(id) === null) {
 				goto('/Batches/Presets');
@@ -75,6 +80,8 @@
 		if (batch) return 'allBatches';
 		const totw = $totwIndexStore?.find((t) => String(t.id) === String(batchId));
 		if (totw) return 'TOTW';
+		const tots = $totsIndexStore?.find((t) => String(t.id) === String(batchId));
+		if (tots) return 'TOTS';
 		const preset = $presetsBatchesStore?.find((p) => String(p.id) === String(batchId));
 		if (preset) return 'Presets';
 		return null;
@@ -87,6 +94,7 @@
 			? (() => {
 					const origin = findBatchOriginById(id);
 					if (origin === 'TOTW') return `https://cdn.easysbc.io/fc26/cards/e_3_0.png`;
+					if (origin === 'TOTS') return `https://cdn.easysbc.io/fc26/cards/e_127_0.png`;
 					if (origin === 'allBatches') return `https://cdn.easysbc.io/fc26/cards/e_22_0.png`;
 					if (origin === 'Presets') return `https://cdn.easysbc.io/fc26/cards/e_150_0.png`;
 					return `https://cdn.easysbc.io/fc26/cards/e_114_0.png`;
@@ -107,6 +115,9 @@
 			if (origin === 'TOTW') {
 				const totw = $totwIndexStore?.find((t) => String(t.id) === String(id));
 				if (totw) return totw.name;
+			}if (origin === 'TOTS') {
+				const tots = $totsIndexStore?.find((t) => String(t.id) === String(id));
+				if (tots) return tots.name;
 			}
 			if (origin === 'Presets') {
 				const preset = $presetsBatchesStore?.find((p) => String(p.id) === String(id));
